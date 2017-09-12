@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">MoviesByGA</string>
+    <string name="settings_order_by_popularity_label" translatable="true">Popularity</string>
+    <string name="settings_order_by_vote_label" translatable="true">Vote</string>
+    <string name="settings_order_by_popularity_value">popularity.desc</string>
+    <string name="settings_order_by_vote_value">vote_average.desc</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Key name for storing order in SharedPreferences -->
+    <string name="pref_order_key" translatable="false">order</string>
+
+    <!-- Default order for order preference -->
+    <string name="pref_order_default" translatable="false">popularity.desc</string>
+
+    <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
+    <string name="action_settings">Settings</string>
+    <!-- Title of the DetailActivity -->
+    <string name="title_activity_detail">Details</string>
+    <string name="content_authority">com.example.marcin.moviesbyga</string>
+    <string name="action_share">Share</string>
+    <string name="no_internet">No internet connection.</string>
+</resources>
