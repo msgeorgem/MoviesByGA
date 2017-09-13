@@ -128,8 +128,8 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 //        );
 
         String order = sharedPrefs.getString(
-                getString(R.string.pref_order_key),
-                getString(R.string.pref_order_default)
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_label)
         );
 
         Uri baseUri = Uri.parse(QUERY_BASE_URL);
@@ -220,7 +220,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings_m) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingsIntent);
             return true;

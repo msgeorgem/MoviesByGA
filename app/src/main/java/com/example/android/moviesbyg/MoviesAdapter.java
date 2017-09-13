@@ -91,7 +91,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.NewsViewHo
     }
 
 
-
     public class NewsViewHolder extends RecyclerView.ViewHolder {
         public String imageURL;
         public ImageView imageView;

@@ -3,10 +3,10 @@
     android:title="@string/title_activity_settings">
 
     <ListPreference
-        android:defaultValue="@string/settings_order_by_popularity_value"
+        android:defaultValue="@string/settings_order_by_default"
         android:entries="@array/settings_order_by_labels"
         android:entryValues="@array/settings_order_by_values"
-        android:key="@string/settings_order_by_popularity_value"
-        android:title="@string/settings_order_by_popularity_label" />
+        android:key="@string/settings_order_by_key"
+        android:title="@string/settings_order_by_label" />
 
 </PreferenceScreen>

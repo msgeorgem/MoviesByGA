@@ -1,16 +1,17 @@
 <resources>
     <string name="app_name">MoviesByGA</string>
-    <string name="settings_order_by_popularity_label" translatable="true">Popularity</string>
-    <string name="settings_order_by_vote_label" translatable="true">Vote</string>
-    <string name="settings_order_by_popularity_value">popularity.desc</string>
-    <string name="settings_order_by_vote_value">vote_average.desc</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Key name for storing order in SharedPreferences -->
-    <string name="pref_order_key" translatable="false">order</string>
+    <string name="settings_order_by_popularity_label" translatable="true">Popularity</string>
+    <string name="settings_order_by_vote_label" translatable="true">Vote</string>
+
+    <string name="settings_order_by_popularity_value">popularity.desc</string>
+    <string name="settings_order_by_vote_value">vote_average.desc</string>
 
     <!-- Default order for order preference -->
-    <string name="pref_order_default" translatable="false">popularity.desc</string>
+    <string name="settings_order_by_default" translatable="false">popularity.desc</string>
+    <string name="settings_order_by_label">Order By</string>
+    <string name="settings_order_by_key">order</string>
 
     <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
     <string name="action_settings">Settings</string>
