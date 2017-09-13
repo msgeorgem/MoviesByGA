@@ -41,7 +41,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     private static final String QUERY_BASE_URL = URL;
     /* API_KEY gained from themoviedb.org */
     private static final String API_KEY = "api_key";
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+    private static final String api_key = "";
     private static final String SORT_BY = "sort_by";
     private static final String BY_VOTE = "vote_average.desc";
     private static final String BY_POPULARITY = "popularity.desc";
