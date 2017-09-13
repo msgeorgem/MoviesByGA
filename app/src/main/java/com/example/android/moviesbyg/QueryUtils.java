@@ -26,9 +26,8 @@ public class QueryUtils {
      * Tag for the log messages
      */
     public static final String LOG_TAG = QueryUtils.class.getSimpleName();
-
+    public static final String MDB_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
     private static final String ERROR_MESSAGE = "Problem parsing the earthquake JSON results";
-
     private static final String MDB_RESULTS = "results";
     private static final String MDB_TITLE = "title";
     private static final String MDB_DATE = "release_date";
@@ -37,7 +36,6 @@ public class QueryUtils {
     private static final String MDB_OVERVIEW = "overview";
     private static final String MDB_POSTER = "poster_path";
     private static final String MDB_BACKDROP_PATH = "backdrop_path";
-    public static final String MDB_POSTER_PATH = "http://image.tmdb.org/t/p/original";
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
      * This class is only meant to hold static variables and methods, which can be accessed

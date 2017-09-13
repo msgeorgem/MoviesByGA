@@ -30,8 +30,13 @@
                 android:value=".MoviesActivity"/>
         </activity>
 
-        <!--The manifest entry for our SettingsActivity. Each Activity requires a manifest entry-->
-        <activity android:name=".SettingsActivity"/>
+        <activity
+            android:name="com.example.android.moviesbyg.SettingsActivity"
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.moviesbyg.MoviesActivity" />
+        </activity>
     </application>
 
 </manifest>
