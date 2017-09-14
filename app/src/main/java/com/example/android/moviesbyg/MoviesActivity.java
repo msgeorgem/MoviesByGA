@@ -54,6 +54,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
      */
     public MoviesAdapter mAdapter;
     Parcelable state;
+    private GridLayoutManager mLayoutManager;
     private RecyclerView newsRecyclerView;
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     /**
@@ -195,9 +196,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         super.onPause();
 
         // save RecyclerView state
-        mBundleRecyclerViewState = new Bundle();
-        Parcelable listState = newsRecyclerView.getLayoutManager().onSaveInstanceState();
-        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+
+        state = newsRecyclerView.getLayoutManager().onSaveInstanceState();
+
     }
 
     @Override
@@ -205,9 +206,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         super.onResume();
 
         // restore RecyclerView state
-        if (mBundleRecyclerViewState != null) {
-            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
-            newsRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        if (state != null) {
+
+            newsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
     }
 

@@ -10,7 +10,6 @@ public class SingleMovie {
     private String mOverview;
     private String mReleaseDate;
     private String mVoting;
-    private String mUrl;
 
     /**
      * Create a new SingleMovieobject.
@@ -18,18 +17,16 @@ public class SingleMovie {
      * @param overview is the overview of the movie
      * @param releaseDate  is the publish date of the movie
      * @param voting  is the voting of the movie
-     * @param url       is the url of the website about specific movie
      * @param poster is the url of the thumbnail about specific movie
      */
 
     public SingleMovie(String title, String overview, String releaseDate, String voting,
-                      String url, String poster) {
+                       String poster) {
         mPoster = poster;
         mTitle = title;
         mOverview = overview;
         mReleaseDate = releaseDate;
         mVoting = voting;
-        mUrl = url;
     }
     /**
      * Get the thumbnail of the article.
@@ -64,11 +61,6 @@ public class SingleMovie {
     public String getVoting(){
         return mVoting;
     }
-    /**
-     * Get the url of the article.
-     */
-    public String getUrl() {
-        return mUrl;
-    }
+
 
 }

@@ -60,12 +60,6 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        // If the item hasn't changed, continue with handling back button press
-//        super.onBackPressed();
-//        return;
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

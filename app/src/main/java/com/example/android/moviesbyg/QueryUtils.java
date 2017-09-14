@@ -46,7 +46,6 @@ public class QueryUtils {
 
 
 
-
     /**
      * Query the USGS dataset and return an {@link ArrayList <SingleMovie>} object to represent a single news.
      */
@@ -173,13 +172,14 @@ public class QueryUtils {
 
                 String movieTitle = movie.getString(MDB_TITLE);
                 String movieDate = movie.getString(MDB_DATE);
-                String moviePopularity = movie.getString(MDB_POPULARITY);
                 String movieVote = movie.getString(MDB_VOTE);
                 String movieOverview = movie.getString(MDB_OVERVIEW);
 
                 String moviePoster = movie.getString(MDB_POSTER);
                 String posterPath = MDB_POSTER_PATH+moviePoster;
-                singleMovie.add(new SingleMovie(movieTitle, movieOverview, movieDate, movieVote, moviePopularity, posterPath));
+
+                singleMovie.add(new SingleMovie(movieTitle, movieOverview, movieDate, movieVote, posterPath));
+
             }
 
         } catch (JSONException e) {
