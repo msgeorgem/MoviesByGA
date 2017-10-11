@@ -30,7 +30,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     public static final String EXTRA_POSTER = "EXTRA_POSTER";
     public static final String EXTRA_TITLE = "EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "EXTRA_DESCRIPTION";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "MoviesActivity.newsRecyclerView.activity_movies";
+    private static final String BUNDLE_RECYCLER_LAYOUT = "MoviesActivity.moviesRecyclerView.activity_movies";
     /**
      * Constant value for the news loader ID. We can choose any integer.
      * This really only comes into play if you're using multiple loaders.
@@ -41,21 +41,18 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
     private static final String QUERY_BASE_URL = URL;
     /* API_KEY gained from themoviedb.org */
     private static final String API_KEY = "api_key";
-    private static final String api_key = "";
+    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
     private static final String SORT_BY = "sort_by";
     private static final String BY_VOTE = "vote_average.desc";
     private static final String BY_POPULARITY = "popularity.desc";
 
-    private static final int VERTICAL_ITEM_SPACE = 0;
-    private static Bundle mBundleRecyclerViewState;
-    private final String KEY_RECYCLER_STATE = "recycler_state";
     /**
      * Adapter for the list of movies
      */
     public MoviesAdapter mAdapter;
     Parcelable state;
     private GridLayoutManager mLayoutManager;
-    private RecyclerView newsRecyclerView;
+    private RecyclerView moviesRecyclerView;
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     /**
      * TextView that is displayed when the list is empty
@@ -71,23 +68,23 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         Log.i(LOG_TAG, "initLoader");
 
         // Find a reference to the {@link ListView} in the layout
-        newsRecyclerView = (RecyclerView) findViewById(R.id.list_item);
+        moviesRecyclerView = (RecyclerView) findViewById(R.id.list_item);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            newsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
         else{
-            newsRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         }
 
         mAdapter = new MoviesAdapter(movieGrid);
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
-        newsRecyclerView.setAdapter(mAdapter);
-        newsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        newsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL_LIST));
-        newsRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        moviesRecyclerView.setAdapter(mAdapter);
+        moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+        moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL_LIST));
+        moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
 
@@ -149,14 +146,14 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         View loadingIndicator = findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        newsRecyclerView.setVisibility(View.VISIBLE);
+        moviesRecyclerView.setVisibility(View.VISIBLE);
         mAdapter = new MoviesAdapter(movieGrid);
 
         // If there is a valid list of {@link Movies}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (movies != null && !movies.isEmpty()) {
             mAdapter = new MoviesAdapter(movies);
-            newsRecyclerView.setAdapter(mAdapter);
+            moviesRecyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -174,7 +171,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 //        Log.d(LOG_TAG, "saving listview state @ onPause");
 //        // save RecyclerView state @ onPause
 ////        mBundleRecyclerViewState = new Bundle();
-//        state = newsRecyclerView.getLayoutManager().onSaveInstanceState();
+//        state = moviesRecyclerView.getLayoutManager().onSaveInstanceState();
 ////        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, state);
 //
 //
@@ -186,9 +183,9 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 //        //Refresh your stuff here
 //        if (state != null) {
 //            Log.d(LOG_TAG, "state is not null @ onResume");
-//            newsRecyclerView.requestFocus();
+//            moviesRecyclerView.requestFocus();
 ////            state = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
-//            newsRecyclerView.getLayoutManager().onRestoreInstanceState(state);;
+//            moviesRecyclerView.getLayoutManager().onRestoreInstanceState(state);;
 //            }
 //    }
     @Override
@@ -197,7 +194,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
 
         // save RecyclerView state
 
-        state = newsRecyclerView.getLayoutManager().onSaveInstanceState();
+        state = moviesRecyclerView.getLayoutManager().onSaveInstanceState();
 
     }
 
@@ -208,7 +205,7 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         // restore RecyclerView state
         if (state != null) {
 
-            newsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
+            moviesRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
     }
 
@@ -235,13 +232,13 @@ public class MoviesActivity extends AppCompatActivity implements LoaderManager.L
         if(savedInstanceState != null)
         {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-            newsRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            moviesRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, newsRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, moviesRecyclerView.getLayoutManager().onSaveInstanceState());
 
     }
 

@@ -1,7 +1,9 @@
-package com.example.android.moviesbyg;
+package com.example.android.moviesbyg.MovieClips;
 
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.example.android.moviesbyg.SingleMovie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,48 +20,42 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
- * Created by Marcin on 2017-09-12.
+ * Created by Marcin on 2017-09-15.
  */
 
-public class QueryUtils {
-    public static final String LOG_TAG = QueryUtils.class.getSimpleName();
-    public static final String MDB_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
-    public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
-    public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
+public class QueryClipsUtils {
     /**
      * Tag for the log messages
      */
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
-    public static final String MDB_MOVIE_PATH2 = "/videos?api_key=" + api_key;
-    public static final String MDB_REVIEWS_PATH2 = "/reviews?api_key=" + api_key;
+    public static final String LOG_TAG = QueryClipsUtils.class.getSimpleName();
+
     private static final String API_KEY = "api_key";
 
 
-    private static final String ERROR_MESSAGE = "Problem parsing the movie JSON results";
-    private static final String MDB_RESULTS = "results";
-    private static final String MDB_TITLE = "title";
-    private static final String MDB_DATE = "release_date";
-    private static final String MDB_POPULARITY = "popularity";
-    private static final String MDB_VOTE = "vote_average";
-    private static final String MDB_OVERVIEW = "overview";
-    private static final String MDB_POSTER = "poster_path";
-    private static final String MDB_ID = "id";
+    private static final String ERROR_MESSAGEC = "Problem parsing the clip JSON results";
+    private static final String MDB_RESULTSC = "results";
+    private static final String MDB_NAMEC = "name";
+    private static final String MDB_TYPEC = "type";
+    private static final String MDB_IDC = "id";
+    private static final String MDB_KEYC = "key";
+    private static final String YT_BASE = "https://www.youtube.com/watch?v=";
+
     private static final String MDB_BACKDROP_PATH = "backdrop_path";
+
     /**
-     * Create a private constructor because no one should ever create a {@link QueryUtils} object.
+     * Create a private constructor because no one should ever create a {@link QueryClipsUtils} object.
      * This class is only meant to hold static variables and methods, which can be accessed
      * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
      */
-    private QueryUtils() {
+    private QueryClipsUtils() {
     }
 
 
-
     /**
-     * Query the USGS dataset and return an {@link ArrayList <SingleMovie>} object to represent a single news.
+     * Query the USGS dataset and return an {@link ArrayList <SingleMovieClip>} object to represent a single news.
      */
-    public static ArrayList<SingleMovie> fetchMoviesData(String requestUrl) {
-        Log.i(LOG_TAG,"fetchSingleNewsData");
+    public static ArrayList<SingleMovieClip> fetchMoviesData(String requestUrl) {
+        Log.i(LOG_TAG, "fetchClips");
 
         try {
             Thread.sleep(200);
@@ -77,11 +73,10 @@ public class QueryUtils {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        ArrayList<SingleMovie> singleMovie = extractMovies(jsonResponse);
+        ArrayList<SingleMovieClip> singleMovieClip = extractMovieClips(jsonResponse);
 
         // Return the {@link Event}
-        return singleMovie;
-
+        return singleMovieClip;
 
     }
 
@@ -103,7 +98,7 @@ public class QueryUtils {
      */
     private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
-
+        Log.i(LOG_TAG, "parsingClipsJson");
         // If the URL is null, then return early.
         if (url == null) {
             return jsonResponse;
@@ -160,39 +155,35 @@ public class QueryUtils {
      * Return a list of {@link SingleMovie} objects that has been built up from
      * parsing a JSON response.
      */
-    public static ArrayList<SingleMovie> extractMovies(String singleMovieJSON) {
+    public static ArrayList<SingleMovieClip> extractMovieClips(String singleMovieClipJSON) {
         // If the JSON string is empty or null, then return early.
-        if (TextUtils.isEmpty(singleMovieJSON)) {
+        if (TextUtils.isEmpty(singleMovieClipJSON)) {
             return null;
         }
 
-        // Create an empty ArrayList that we can start adding singleMovie to
-        ArrayList<SingleMovie> singleMovie = new ArrayList<>();
+        // Create an empty ArrayList that we can start adding singleMovieClip to
+        ArrayList<SingleMovieClip> singleMovieClip = new ArrayList<>();
 
         // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
         // is formatted, a JSONException exception object will be thrown.
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
-            JSONObject root = new JSONObject(singleMovieJSON);
-            JSONArray jsonResultsArray = root.getJSONArray(MDB_RESULTS);
+            JSONObject root = new JSONObject(singleMovieClipJSON);
+            JSONArray jsonResultsArray = root.getJSONArray(MDB_RESULTSC);
 
             for (int i = 0; i < jsonResultsArray.length(); i++) {
                 JSONObject movie = jsonResultsArray.getJSONObject(i);
+                String clipName = movie.getString(MDB_NAMEC);
+                String clipType = movie.getString(MDB_TYPEC);
 
-                String movieTitle = movie.getString(MDB_TITLE);
-                String movieDate = movie.getString(MDB_DATE);
-                String movieVote = movie.getString(MDB_VOTE);
-                String movieOverview = movie.getString(MDB_OVERVIEW);
+                String clipId = movie.getString(MDB_KEYC);
+                String ytclipId = YT_BASE + clipId;
+//                    String reviewIdPath = MDB_MOVIE_PATH1+movieId+MDB_REVIEWS_PATH2;
+//
+//
+//                    String clipPath = MDB_POSTER_PATH+moviePoster;
 
-                String movieId = movie.getString(MDB_ID);
-                String movieIdPath = MDB_MOVIE_PATH1 + movieId + MDB_MOVIE_PATH2;
-                String reviewIdPath = MDB_MOVIE_PATH1 + movieId + MDB_REVIEWS_PATH2;
-
-                String moviePoster = movie.getString(MDB_POSTER);
-                String posterPath = MDB_POSTER_PATH+moviePoster;
-
-                singleMovie.add(new SingleMovie(movieTitle, movieOverview, movieDate, movieVote, posterPath, movieIdPath, reviewIdPath, movieId));
-
+                singleMovieClip.add(new SingleMovieClip(ytclipId, clipName, clipType));
             }
 
         } catch (JSONException e) {
@@ -203,7 +194,7 @@ public class QueryUtils {
         }
 
         // Return the list of news
-        return singleMovie;
+        return singleMovieClip;
     }
 
 }
