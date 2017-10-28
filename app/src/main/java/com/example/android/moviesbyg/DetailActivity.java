@@ -1,8 +1,12 @@
 package com.example.android.moviesbyg;
 
 import android.app.FragmentManager;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -10,14 +14,20 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.example.android.moviesbyg.DataFavs.FavouritesContract;
 import com.example.android.moviesbyg.MovieClips.ClipsFragment;
 import com.example.android.moviesbyg.MovieReviews.MovieReviewsAdapter;
 import com.example.android.moviesbyg.MovieReviews.ReviewsFragment;
@@ -25,7 +35,16 @@ import com.example.android.moviesbyg.MovieReviews.SingleMovieReview;
 import com.example.android.moviesbyg.databinding.ActivityDetailBinding;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_OVERVIEW;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_POSTER;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_RELEASE_DATE;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_TILE;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_VOTE;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.CONTENT_URI;
 
 /**
  * Created by Marcin on 2017-09-10.
@@ -48,8 +67,10 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     public static String QUERY_BASE_URL_C;
     public static String QUERY_BASE_URL_R;
     public static ConnectivityManager cm;
+    public static SharedPreferences favPrefs;
     private final String MDB_SHARE_HASHTAG = "IMDB Source";
     Parcelable state;
+    SQLiteDatabase mDb;
     private String mMovieSummary;
     private MovieReviewsAdapter mAdapterR;
     private RecyclerView reviewsRecyclerView;
@@ -57,8 +78,10 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private Context context;
     private ClipsFragment mClipsFragment;
     private ReviewsFragment mReviewsFragment;
-
-
+    private ToggleButton FAVtoggleButton;
+    private boolean mMovieFav = false;
+    private String title, releaseDate, vote, overview, poster;
+    private int movieId;
     /**
      * TextView that is displayed when the list is empty
      */
@@ -70,20 +93,21 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         super.onCreate(savedInstanceState);
         ActivityDetailBinding mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        String title = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
+        title = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
         mDetailBinding.part2.title.setText(title);
 
-        String releaseDate = getIntent().getStringExtra(MoviesAdapter.EXTRA_RELEASE_DATE);
+        releaseDate = getIntent().getStringExtra(MoviesAdapter.EXTRA_RELEASE_DATE);
         mDetailBinding.part2.releaseDate.setText(releaseDate);
 
-        String vote = getIntent().getStringExtra(MoviesAdapter.EXTRA_VOTE);
+        vote = getIntent().getStringExtra(MoviesAdapter.EXTRA_VOTE);
         mDetailBinding.part2.rating.setText(vote);
 
-        String overview = getIntent().getStringExtra(MoviesAdapter.EXTRA_OVERVIEW);
+        overview = getIntent().getStringExtra(MoviesAdapter.EXTRA_OVERVIEW);
         mDetailBinding.part3.overview2.setText(overview);
 
-        String poster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
+        poster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
         context = mDetailBinding.part1.poster.getContext();
         Picasso.with(context).load(poster).into(mDetailBinding.part1.poster);
 
@@ -100,161 +124,124 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 .commit();
 
 
+        //TODO: fix shared prefs
+
+        FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
+        favPrefs = getSharedPreferences("favourites", MODE_PRIVATE);
+        FAVtoggleButton.setChecked(favPrefs.getBoolean("Off", false));
+//        favPrefs = getPreferences(MODE_PRIVATE);
+        FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_grey));
+        FAVtoggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+
+                if (isChecked) {
+                    FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_yellow));
+                    SharedPreferences.Editor editor = favPrefs.edit();
+                    editor.putBoolean("On", true);
+                    editor.apply();
+                    try {
+                        saveItem();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_grey));
+                    SharedPreferences.Editor editor = favPrefs.edit();
+                    editor.putBoolean("Off", false);
+                    editor.apply();
+                }
+            }
+        });
+
         MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
         QUERY_BASE_URL_C = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_MOVIE_PATH2;
         QUERY_BASE_URL_R = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_REVIEWS_PATH2;
         mMovieSummary = title + "" + releaseDate + "" + overview;
         Log.i(LOG_TAG, "initClipsLoader");
-//
-//        // Find a reference to the {@link ListView} in the layout
-//        clipsRecyclerView = (RecyclerView) findViewById(R.id.list_videos);
-//        clipsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        mAdapterC = new MovieClipsAdapter(clipsList);
-//        // Set the adapter on the {@link ListView}
-//        // so the list can be populated in the user interface
-//        clipsRecyclerView.setAdapter(mAdapterC);
-//        clipsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL_LIST));
-//        clipsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
-//        // Find a reference to the {@link ListView} in the layout
-//        reviewsRecyclerView = mDetailBinding.part5.listReviews;
-//        reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        mAdapterR = new MovieReviewsAdapter(reviewsList);
-//        // Set the adapter on the {@link ListView}
-//        // so the list can be populated in the user interface
-//        reviewsRecyclerView.setAdapter(mAdapterR);
-//        reviewsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL_LIST));
-//        reviewsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
-//        mEmptyStateTextView1 = (TextView) findViewById(R.id.empty_view1);
-//        mEmptyStateTextView2 = (TextView) findViewById(R.id.empty_view2);
-
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-//        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-//        if (networkInfo != null && networkInfo.isConnected()) {
-//
-//            // Get a reference to the LoaderManager, in order to interact with loaders.
-//            LoaderManager loaderManager = getLoaderManager();
-//            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-//            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-//            // because this activity implements the LoaderCallbacks interface).
-//            loaderManager.initLoader(CLIPS_LOADER_ID, null, ClipsFragment.this);
-////            loaderManager.initLoader(REVIEWS_LOADER_ID, null, DetailActivity.this);
-//
-//        } else {
-//            // Otherwise, display error
-//            // First, hide loading indicator so error message will be visible
-//            View loadingIndicator1 = findViewById(R.id.loading_indicator1);
-////            View loadingIndicator2 = findViewById(R.id.loading_indicator2);
-//            loadingIndicator1.setVisibility(View.GONE);
-////            loadingIndicator2.setVisibility(View.GONE);
-//            // Set empty state text to display "No internet connection"
-//            mEmptyStateTextView1.setText(R.string.no_internet);
-////            mEmptyStateTextView2.setText(R.string.no_internet);
-//        }
 
     }
 
-//    @Override
-//    public Loader<ArrayList<SingleMovieClip>> onCreateLoader(int i, Bundle bundle) {
-//        Log.i(LOG_TAG, "onCreateLoadert");
-//
-//        Uri baseUriC = Uri.parse(QUERY_BASE_URL_C);
-//        Uri baseUriR = Uri.parse(QUERY_BASE_URL_R);
-//
-//        return new MovieClipsLoader(this, baseUriC.toString());
-//    }
-//    @Override
-//    public void onLoadFinished(Loader<ArrayList<SingleMovieClip>> loader, ArrayList<SingleMovieClip> clips) {
-//        // Hide loading indicator because the data has been loaded
-//        Log.i(LOG_TAG, "onLoadFinished");
-//        View loadingIndicator = findViewById(R.id.loading_indicator1);
-//        loadingIndicator.setVisibility(View.GONE);
-//
-//        clipsRecyclerView.setVisibility(View.VISIBLE);
-//        mAdapterC = new MovieClipsAdapter(clipsList);
-//
-//
-//        // If there is a valid list of {@link Movies}s, then add them to the adapter's
-//        // data set. This will trigger the ListView to update.
-//        if (clips != null && !clips.isEmpty()) {
-//            mAdapterC = new MovieClipsAdapter(clips);
-//            clipsRecyclerView.setAdapter(mAdapterC);
-//        }
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<ArrayList<SingleMovieClip>> loader) {
-//        // Loader reset, so we can clear out our existing data.
-//        Log.i(LOG_TAG, "onLoaderReset");
-//        mAdapterC = new MovieClipsAdapter(clipsList);
-//    }
+    // Get user input from editor and save item into database.
+    private void saveItem() throws IOException {
 
-    //
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        Log.d(LOG_TAG, "saving listview state @ onPause");
-//        // save RecyclerView state @ onPause
-////        mBundleRecyclerViewState = new Bundle();
-//        state = newsRecyclerView.getLayoutManager().onSaveInstanceState();
-////        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, state);
-//
-//
-//    }
-//
-//    @Override
-//    public void onResume() {  // After a pause OR at startup
-//        super.onResume();
-//        //Refresh your stuff here
-//        if (state != null) {
-//            Log.d(LOG_TAG, "state is not null @ onResume");
-//            newsRecyclerView.requestFocus();
-////            state = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
-//            newsRecyclerView.getLayoutManager().onRestoreInstanceState(state);;
-//            }
-//    }
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        // save RecyclerView state
-//        state = clipsRecyclerView.getLayoutManager().onSaveInstanceState();
-//
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        // restore RecyclerView state
-//        if (state != null) {
-//            clipsRecyclerView.getLayoutManager().onRestoreInstanceState(state);
-//        }
-//    }
+        //TODO: add condition if added movie exists in favorites table, if exists change BOOLEAN to true
+        // Read from input getintent
+        //       String movieIdInt = getString(movieId);
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings_m) {
-//            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-//            startActivity(settingsIntent);
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+        if (mMovieFav) {
+            Toast.makeText(this, R.string.editor_update_item_failed, Toast.LENGTH_SHORT).show();
+            // Since no fields were modified, we can return early without creating a new item.
+            // No need to create ContentValues and no need to do any ContentProvider operations.
+
+            return;
+
+        } else {
+            // if (TextUtils.isEmpty(movieIdInt)) {
+            //     Toast.makeText(this, getString(R.string.movieId_required), Toast.LENGTH_SHORT).show();
+            //    return;
+            //}
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_MOVIE_ID, movieId);
+            values.put(COLUMN_TILE, title);
+            values.put(COLUMN_RELEASE_DATE, releaseDate);
+            values.put(COLUMN_VOTE, vote);
+            values.put(COLUMN_OVERVIEW, overview);
+            values.put(COLUMN_POSTER, poster);
+
+            // This is a NEW item, so insert a new item into the provider,
+            // returning the content URI for the item item.
+            Uri newUri = getContentResolver().insert(CONTENT_URI, values);
+
+            // Show a toast message depending on whether or not the insertion was successful.
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, getString(R.string.editor_insert_item_failed), Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_insert_item_success), Toast.LENGTH_SHORT).show();
+//                finish();
+            }
+        }
+    }
+
+    private void deleteOneItem(long id) {
+        int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry._ID + "=" + id, null);
+        Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
+    }
+
+    private void showDeleteConfirmationDialogOneItem(final RecyclerView.ViewHolder viewHolder) {
+        //Inside, get the viewHolder's itemView's tag and store in a long variable id
+        //get the iD of the item being swiped
+        final long iD = (long) viewHolder.itemView.getTag();
+
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_oneitem_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the item.
+                //remove from DB
+                deleteOneItem(iD);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                //call swapCursor on mAdapter passing in null as the argument
+                //update the list
+//                mCursorAdapter.swapCursor(querY());
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -322,4 +309,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     @Override
     public void onFragmentInteractionR(Uri uri) {
     }
+
+
 }

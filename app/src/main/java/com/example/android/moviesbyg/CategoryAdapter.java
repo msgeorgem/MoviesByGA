@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.example.android.moviesbyg.Favourites.FavouritesFragment;
+
 
 /**
  * Created by Marcin on 2017-10-24.

@@ -25,5 +25,16 @@
     <string name="category_Movies">IMDB</string>
     <string name="category_Favs">Favorites Local</string>
 
+    <string name="movieId_required">MovieId required</string>
+    <string name="editor_insert_item_failed">Error with saving movie</string>
+    <string name="editor_update_item_failed">You already favor this movie</string>
+    <string name="editor_insert_item_success">Movie saved</string>
+
+
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_oneitem_dialog_msg">Are you sure to remove this movie from favourites?</string>
+    <string name="delete_one_item">Movie removed from favourites</string>
+
 
 </resources>
