@@ -3,7 +3,6 @@ package com.example.android.moviesbyg;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,15 +38,12 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private static final String SORT_BY = "sort_by";
     private static final String BUNDLE_RECYCLER_LAYOUT = "IMDBOnlineFragment.moviesRecyclerView";
     private static final int MOVIES_LOADER_ID = 1;
-    public static ConnectivityManager cm;
     public MoviesAdapter mAdapter;
     Parcelable state;
     private View view;
-    private GridLayoutManager mLayoutManager;
     private RecyclerView moviesRecyclerView;
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     private TextView mEmptyStateTextView;
-
 
     public IMDBOnlineFragment() {
         // Required empty public constructor
@@ -57,15 +53,10 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        // Get a reference to the ConnectivityManager to check state of network connectivity
-//        ConnectivityManager cm = (ConnectivityManager)
-//                getSystemService(Context.CONNECTIVITY_SERVICE);
-
         // Get details on the currently active default data network
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-
             // Get a reference to the LoaderManager, in order to interact with loaders.
             LoaderManager loaderManager = getLoaderManager();
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
@@ -80,9 +71,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
             // Set empty state text to display "No internet connection"
             mEmptyStateTextView.setText(R.string.no_internet);
         }
-
     }
-
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -108,7 +97,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
         mEmptyStateTextView = view.findViewById(R.id.empty_view);
         return view;
     }
@@ -133,7 +121,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     public void onStop() {
         super.onStop();
     }
-
 
     @Override
     public Loader<ArrayList<SingleMovie>> onCreateLoader(int i, Bundle bundle) {
@@ -171,7 +158,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
             mAdapter = new MoviesAdapter(movies);
             moviesRecyclerView.setAdapter(mAdapter);
         }
-
     }
 
     @Override
@@ -190,15 +176,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
-    //    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//        if(savedInstanceState != null)
-//        {
-//            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
-//            moviesRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-//        }
-//    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

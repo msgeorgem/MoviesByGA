@@ -30,7 +30,17 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
     public static final String LOG_TAG = FavouritesFragment.class.getName();
     private static final int FAV_LOADER = 0;
-    private static final String[] PROJECTION = {
+    private static final String[] PROJECTION1 = {
+            FavouritesContract.FavouritesEntry._ID,
+            FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
+            FavouritesContract.FavouritesEntry.COLUMN_TILE,
+            FavouritesContract.FavouritesEntry.COLUMN_RELEASE_DATE,
+            FavouritesContract.FavouritesEntry.COLUMN_VOTE,
+            FavouritesContract.FavouritesEntry.COLUMN_OVERVIEW,
+            FavouritesContract.FavouritesEntry.COLUMN_POSTER
+    };
+
+    private static final String[] PROJECTION2 = {
             FavouritesContract.FavouritesEntry._ID,
             FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
             FavouritesContract.FavouritesEntry.COLUMN_TILE,
@@ -85,6 +95,10 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, null, null, null, SORT_ORDER);
     }
 
+    private Cursor queryMoviesId() {
+        return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION2, null, null, null);
+    }
+
     public void deleteOneItem(long id) {
         int rowDeleted = getActivity().getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry._ID + "=" + id, null);
         Toast.makeText(getActivity(), rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
@@ -118,7 +132,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         // Perform a query using CursorLoader
         return new CursorLoader(getActivity(),    // Parent activity context
                 FavouritesContract.FavouritesEntry.CONTENT_URI, // Provider content URI to query
-                PROJECTION,            // The columns to include in the resulting Cursor
+                PROJECTION1,            // The columns to include in the resulting Cursor
                 null,         // The values for the WHERE clause
                 null,      // No SELECTION arguments
                 SORT_ORDER);
