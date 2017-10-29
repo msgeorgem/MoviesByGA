@@ -1,13 +1,18 @@
 package com.example.android.moviesbyg.Favourites;
 
+import android.content.ContentUris;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
+import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.DividerItemDecoration;
 import com.example.android.moviesbyg.R;
 
@@ -43,11 +49,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     private static final String[] PROJECTION2 = {
             FavouritesContract.FavouritesEntry._ID,
             FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
-            FavouritesContract.FavouritesEntry.COLUMN_TILE,
-            FavouritesContract.FavouritesEntry.COLUMN_RELEASE_DATE,
-            FavouritesContract.FavouritesEntry.COLUMN_VOTE,
-            FavouritesContract.FavouritesEntry.COLUMN_OVERVIEW,
-            FavouritesContract.FavouritesEntry.COLUMN_POSTER
+
     };
     //   Just a rough idea how to sort in query
     private static final String SORT_ORDER = FavouritesContract.FavouritesEntry._ID + " DESC";
@@ -91,7 +93,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         return view;
     }
 
-    private Cursor querY() {
+    public Cursor querY() {
         return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, null, null, null, SORT_ORDER);
     }
 
@@ -99,10 +101,43 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION2, null, null, null);
     }
 
-    public void deleteOneItem(long id) {
+    void deleteOneItem(long id) {
         int rowDeleted = getActivity().getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry._ID + "=" + id, null);
         Toast.makeText(getActivity(), rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
 //        mFavsAdapter.swapCursor(querY());
+    }
+
+    public void showDeleteConfirmationDialogOneItem(final RecyclerView.ViewHolder viewHolder) {
+        //Inside, get the viewHolder's itemView's tag and store in a long variable id
+        //get the iD of the item being swiped
+        final long iD = (long) viewHolder.itemView.getTag();
+
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.delete_oneitem_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the item.
+                //remove from DB
+                deleteOneItem(iD);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                //call swapCursor on mAdapter passing in null as the argument
+                //update the list
+                mFavsAdapter.swapCursor(querY());
+            }
+        });
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     @Override
@@ -120,12 +155,10 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
             favouritesRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
     }
-
     @Override
     public void onStop() {
         super.onStop();
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -138,14 +171,11 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
                 SORT_ORDER);
     }
 
-
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
         // Callback called when the data needs to be deleted
         mFavsAdapter.swapCursor(null);
     }
-
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -158,7 +188,6 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
             mloadingIndicator.setVisibility(View.GONE);
         }
         mFavsAdapter.swapCursor(data);
-
     }
 
     @Override
@@ -174,15 +203,14 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, favouritesRecyclerView.getLayoutManager().onSaveInstanceState());
-
     }
 
     public void onItemClick(long id) {
-        //       Intent intent = new Intent(FavouritesFragment.this, DetailActivity.class);
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
 
-        //   Uri currentProductUri = ContentUris.withAppendedId(FavouritesContract.FavouritesEntry.CONTENT_URI, id);
-        //   intent.setData(currentProductUri);
+        Uri currentProductUri = ContentUris.withAppendedId(FavouritesContract.FavouritesEntry.CONTENT_URI, id);
+        intent.setData(currentProductUri);
 
-        //   startActivity(intent);
+        startActivity(intent);
     }
 }

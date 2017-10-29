@@ -14,10 +14,9 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
+import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.R;
 import com.squareup.picasso.Picasso;
-
-import static com.example.android.moviesbyg.DetailActivity.favPrefs;
 
 /**
  * Created by Marcin on 2017-10-28.
@@ -38,6 +37,8 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
                 .inflate(R.layout.list_favourites, parent, false);
         ViewHolder vh = new ViewHolder(itemView);
         return vh;
+
+
     }
 
     @Override
@@ -68,42 +69,40 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //          fragment.onItemClick(id);
+                fragment.onItemClick(id);
             }
         });
 
-//        viewHolder.favToggle.setOnClickListener(new View.OnClickListener() {
-//               @Override
-//               public void onClick(View v) {
-//                   fragment.deleteOneItem(id);
-//              }
-//           });
-
-//TODO improve sharedpreferences (how to get checked state and yellow star automatically)
-        favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
-//        viewHolder.favToggle.setChecked(favPrefs.getBoolean("On", true));
-        viewHolder.favToggle.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
+        DetailActivity.favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
+        Boolean a = DetailActivity.favPrefs.getBoolean("On" + context, true);
+        if (a) {
+            viewHolder.favToggle.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
+            viewHolder.favToggle.setChecked(true);
+        } else {
+//            !!!IMPORTANT!!! THESE LINES ARE NOT NECESSARY IN THE FOLLOWING CODE SINCE FAVOURITES ARE ALWAYS STAR YELLOW
+//            AND TRUE UNLESS DELETED. IF DELETED THEY DO NOT APPEAR IN THE FAVOURITES TABLE ANYWAY
+//            viewHolder.favToggle.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_grey));
+//            viewHolder.favToggle.setChecked(false);
+        }
         viewHolder.favToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
                 if (isChecked) {
                     viewHolder.favToggle.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
-                    SharedPreferences.Editor editor = favPrefs.edit();
-                    editor.putBoolean("On", true);
+                    SharedPreferences.Editor editor = DetailActivity.favPrefs.edit();
+                    editor.putBoolean("On" + context, true);
                     editor.apply();
-
                 } else {
                     viewHolder.favToggle.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_grey));
-                    SharedPreferences.Editor editor = favPrefs.edit();
-                    editor.putBoolean("Off", false);
-                    editor.apply();
-                    //TODO ask whether you want to remove movie from favourites list
-                    fragment.deleteOneItem(id);
+//                    STAR GREY IS ONLY TEMPORARY STATE BETWEEN CLICK AND SHOWDELETECONFIRMATIONDIALOG AND CANCEL BUTTON
+//                    SO WE DO NOT SAVE GREY STAR STATE IN THIS CASE
+//                    SharedPreferences.Editor editor = DetailActivity.favPrefs.edit();
+//                    editor.putBoolean("On"+ context, false);
+//                    editor.apply();
+                    fragment.showDeleteConfirmationDialogOneItem(viewHolder);
                 }
             }
         });
-
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -112,7 +111,6 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
         public TextView overviewTextView;
         public ImageView posterImageView;
         public ToggleButton favToggle;
-
 
         public ViewHolder(View view) {
             super(view);

@@ -28,7 +28,7 @@
     <string name="movieId_required">MovieId required</string>
     <string name="editor_insert_item_failed">Error with saving movie</string>
     <string name="editor_update_item_failed">You already favor this movie</string>
-    <string name="editor_insert_item_success">Movie saved</string>
+    <string name="editor_insert_item_success">Movie added to favourites</string>
 
 
     <string name="delete">Delete</string>

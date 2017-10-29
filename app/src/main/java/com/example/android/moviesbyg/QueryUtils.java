@@ -130,6 +130,7 @@ public class QueryUtils {
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
+
             }
             if (inputStream != null) {
                 inputStream.close();

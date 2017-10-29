@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import static android.R.attr.id;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID;
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry._ID;
 
 /**
@@ -119,7 +120,7 @@ public class FavouritesProvider extends ContentProvider {
     private Uri insertItem(Uri uri, ContentValues values) {
 
         // Check that the movie_id is not null
-        String movie_id = values.getAsString(FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID);
+        String movie_id = values.getAsString(COLUMN_MOVIE_ID);
         if (movie_id == null) {
             throw new IllegalArgumentException("Item requires a movie_id");
         }
@@ -210,8 +211,8 @@ public class FavouritesProvider extends ContentProvider {
      */
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // Check that the movie_id is not null
-        if (values.containsKey(FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID)) {
-            String movieId = values.getAsString(FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID);
+        if (values.containsKey(COLUMN_MOVIE_ID)) {
+            String movieId = values.getAsString(COLUMN_MOVIE_ID);
             if (movieId == null) {
                 throw new IllegalArgumentException("Item requires a name");
             }
