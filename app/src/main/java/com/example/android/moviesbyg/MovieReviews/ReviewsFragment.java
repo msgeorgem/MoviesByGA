@@ -17,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.DividerItemDecoration;
+import com.example.android.moviesbyg.MoviesActivity;
 import com.example.android.moviesbyg.R;
 
 import java.util.ArrayList;
+
+import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,8 +35,12 @@ import java.util.ArrayList;
  */
 public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<ArrayList<SingleMovieReview>> {
 
+    public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
     public static final String LOG_TAG = ReviewsFragment.class.getSimpleName();
+    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+    public static final String MDB_REVIEWS_PATH2 = "/reviews?api_key=" + api_key;
     private static final int REVIEWS_LOADER_ID = 333;
+    public static String QUERY_BASE_URL_R;
     public static RecyclerView reviewsRecyclerView;
     Parcelable state;
     private MovieReviewsAdapter mAdapterR;
@@ -52,7 +58,8 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = DetailActivity.cm.getActiveNetworkInfo();
+        NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
+        QUERY_BASE_URL_R = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_REVIEWS_PATH2;
 
         if (networkInfo != null && networkInfo.isConnected()) {
 
@@ -111,7 +118,7 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public Loader<ArrayList<SingleMovieReview>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader ReviewsFragment");
-        Uri baseUriR = Uri.parse(DetailActivity.QUERY_BASE_URL_R);
+        Uri baseUriR = Uri.parse(QUERY_BASE_URL_R);
         return new MovieReviewsLoader(getActivity(), baseUriR.toString());
     }
 

@@ -17,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.DividerItemDecoration;
+import com.example.android.moviesbyg.MoviesActivity;
 import com.example.android.moviesbyg.R;
 
 import java.util.ArrayList;
+
+import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,9 +35,12 @@ import java.util.ArrayList;
  */
 public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallbacks<ArrayList<SingleMovieClip>> {
 
-
+    public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
     public static final String LOG_TAG = ClipsFragment.class.getSimpleName();
+    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+    public static final String MDB_MOVIE_PATH2 = "/videos?api_key=" + api_key;
     private static final int CLIPS_LOADER_ID = 222;
+    public static String QUERY_BASE_URL_C;
     public static RecyclerView clipsRecyclerView;
     Parcelable state;
     private MovieClipsAdapter mAdapterC;
@@ -54,7 +59,8 @@ public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onCreate(savedInstanceState);
 
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = DetailActivity.cm.getActiveNetworkInfo();
+        NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
+        QUERY_BASE_URL_C = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_MOVIE_PATH2;
 
         if (networkInfo != null && networkInfo.isConnected()) {
 
@@ -114,7 +120,7 @@ public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public Loader<ArrayList<SingleMovieClip>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader ClipsFragment");
-        Uri baseUriC = Uri.parse(DetailActivity.QUERY_BASE_URL_C);
+        Uri baseUriC = Uri.parse(QUERY_BASE_URL_C);
         return new MovieClipsLoader(getActivity(), baseUriC.toString());
     }
 

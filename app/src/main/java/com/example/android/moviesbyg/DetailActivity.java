@@ -19,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -48,6 +47,7 @@ import static com.example.android.moviesbyg.DataFavs.FavouritesContract.Favourit
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_TILE;
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_VOTE;
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.CONTENT_URI;
+import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
 
 /**
  * Created by Marcin on 2017-09-10.
@@ -57,23 +57,20 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         LoaderManager.LoaderCallbacks<Cursor> {
 
 
-    public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
+
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     public static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String BUNDLE_RECYCLER_LAYOUT = "DetailActivity.clipsRecyclerView.activity_detail";
     private static final int CLIPS_LOADER_ID = 222;
     private static final int REVIEWS_LOADER_ID = 333;
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
-    public static final String MDB_MOVIE_PATH2 = "/videos?api_key=" + api_key;
-    public static final String MDB_REVIEWS_PATH2 = "/reviews?api_key=" + api_key;
+
+
     /**
      * Identifier for the item data loader
      */
     private static final int SELECTED_MOVIE_LOADER = 0;
-    public static String MDB_CURRENT_MOVIE_ID;
-    public static final String MDB_MOVIE_ID = MDB_CURRENT_MOVIE_ID;
-    public static String QUERY_BASE_URL_C;
-    public static String QUERY_BASE_URL_R;
+
+
     public static ConnectivityManager cm;
     public static SharedPreferences favPrefs;
     private static String movieIdFav;
@@ -94,8 +91,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private String dBtitle, dBrelease, dBvote, dBoverview, dBposter;
     private String justDeletedMovieId, justDeletedTitle, justDeletedReleaseDate,
             justDeletedVote, justDeletedOverview, justDeletedPoster;
-    private String justSavedTitle, justSavedReleaseDate,
-            justSavedVote, justSavedOverview, justSavedPoster;
     private int id;
     private long justDeletedFavMovieId, justSavedMovieId, justDeletedId;
     private String movieId;
@@ -118,8 +113,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
 
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
         if (mCurrentItemUri == null) {
             title = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
             mDetailBinding.part2.title.setText(title);
@@ -137,10 +130,8 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             context = mDetailBinding.part1.poster.getContext();
             Picasso.with(context).load(poster).into(mDetailBinding.part1.poster);
 
-            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
+//            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
-            QUERY_BASE_URL_C = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_MOVIE_PATH2;
-            QUERY_BASE_URL_R = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_REVIEWS_PATH2;
 
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(false);
@@ -238,10 +229,8 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 .replace(mDetailBinding.part5.reviewsContainer.getId(), mReviewsFragment, mReviewsFragment.getTag())
                 .commit();
 
-
         mMovieSummary = title + "" + releaseDate + "" + overview;
         Log.i(LOG_TAG, "initClipsLoader");
-
     }
 
     public void deleteOneItem(long id) {
@@ -261,15 +250,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
 
-    private void saveState(boolean isFavourite) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        sharedPreferences.edit().putBoolean("State", isFavourite).apply();
-    }
-
-    private boolean readState() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return sharedPreferences.getBoolean("State", true);
-    }
 
     // Get user input from editor and save item into database.
     private void saveItem() throws IOException {
@@ -458,8 +438,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
 
             justDeletedFavMovieId = Long.parseLong(movieIdFav);
             MDB_CURRENT_MOVIE_ID = movieIdFav;
-            QUERY_BASE_URL_C = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_MOVIE_PATH2;
-            QUERY_BASE_URL_R = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_REVIEWS_PATH2;
         }
     }
 

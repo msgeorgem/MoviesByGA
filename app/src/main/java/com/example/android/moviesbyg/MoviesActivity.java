@@ -38,6 +38,8 @@ public class MoviesActivity extends AppCompatActivity {
     private static final String BY_VOTE = "vote_average.desc";
     private static final String BY_POPULARITY = "popularity.desc";
     public static ConnectivityManager cm;
+    public static String MDB_CURRENT_MOVIE_ID;
+
     /**
      * Adapter for the list of movies
      */

@@ -12,6 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
+
 /**
  * Created by Marcin on 2017-09-12.
  */
@@ -26,6 +28,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     public static final String EXTRA_VOTE = "EXTRA_VOTE";
     public static final String EXTRA_ID = "EXTRA_ID";
     public static final String EXTRA_POSTER = "EXTRA_POSTER";
+
 
     private static final int IMG_LOADER = 22;
     private static final String IMG_URL_EXTRA = "img";
@@ -59,13 +62,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         Context context = viewHolder.itemView.getContext();
         Picasso.with(context).load(viewHolder.imageURL).fit().into(viewHolder.imageView);
 
-//        viewHolder.titleTextView.setText(currentMovie.getTitle());
-//        viewHolder.shortTextView.setText(currentMovie.getShorttext());
-//
-//
-//        String formattedDate = (currentMovie.getDateTime()).substring(0, 10);
-//        viewHolder.dateView.setText(formattedDate);
-//        viewHolder.typeTextView.setText(currentMovie.getSectionName());
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -87,6 +83,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 intent1.putExtra(EXTRA_ID, currentMovieID);
 
                 context.startActivity(intent1);
+                MDB_CURRENT_MOVIE_ID = currentMovieID;
             }
         });
     }
