@@ -23,7 +23,8 @@ import com.example.android.moviesbyg.R;
 
 import java.util.ArrayList;
 
-import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
+import static com.example.android.moviesbyg.DetailActivity.MDB_CURRENT_MOVIE_ID;
+
 
 /**
  * A simple {@link Fragment} subclass.

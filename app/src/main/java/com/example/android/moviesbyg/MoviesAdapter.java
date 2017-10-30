@@ -12,7 +12,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
 
 /**
  * Created by Marcin on 2017-09-12.
@@ -83,7 +82,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 intent1.putExtra(EXTRA_ID, currentMovieID);
 
                 context.startActivity(intent1);
-                MDB_CURRENT_MOVIE_ID = currentMovieID;
+
             }
         });
     }

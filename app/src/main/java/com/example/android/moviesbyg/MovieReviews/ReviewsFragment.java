@@ -23,7 +23,8 @@ import com.example.android.moviesbyg.R;
 
 import java.util.ArrayList;
 
-import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
+import static com.example.android.moviesbyg.DetailActivity.MDB_CURRENT_MOVIE_ID;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,7 +53,6 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     public ReviewsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +118,7 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public Loader<ArrayList<SingleMovieReview>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader ReviewsFragment");
+
         Uri baseUriR = Uri.parse(QUERY_BASE_URL_R);
         return new MovieReviewsLoader(getActivity(), baseUriR.toString());
     }

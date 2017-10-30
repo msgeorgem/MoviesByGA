@@ -30,6 +30,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
+import com.example.android.moviesbyg.Favourites.FavouritesFragment;
 import com.example.android.moviesbyg.MovieClips.ClipsFragment;
 import com.example.android.moviesbyg.MovieReviews.MovieReviewsAdapter;
 import com.example.android.moviesbyg.MovieReviews.ReviewsFragment;
@@ -47,7 +48,6 @@ import static com.example.android.moviesbyg.DataFavs.FavouritesContract.Favourit
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_TILE;
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_VOTE;
 import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.CONTENT_URI;
-import static com.example.android.moviesbyg.MoviesActivity.MDB_CURRENT_MOVIE_ID;
 
 /**
  * Created by Marcin on 2017-09-10.
@@ -57,20 +57,20 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         LoaderManager.LoaderCallbacks<Cursor> {
 
 
-
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     public static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String BUNDLE_RECYCLER_LAYOUT = "DetailActivity.clipsRecyclerView.activity_detail";
     private static final int CLIPS_LOADER_ID = 222;
     private static final int REVIEWS_LOADER_ID = 333;
-
-
     /**
      * Identifier for the item data loader
      */
-    private static final int SELECTED_MOVIE_LOADER = 0;
-
-
+    private static final int SELECTED_MOVIE_LOADER = 111;
+    private static final String[] PROJECTION = {
+            FavouritesContract.FavouritesEntry._ID,
+            FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
+    };
+    public static String MDB_CURRENT_MOVIE_ID;
     public static ConnectivityManager cm;
     public static SharedPreferences favPrefs;
     private static String movieIdFav;
@@ -92,7 +92,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private String justDeletedMovieId, justDeletedTitle, justDeletedReleaseDate,
             justDeletedVote, justDeletedOverview, justDeletedPoster;
     private int id;
-    private long justDeletedFavMovieId, justSavedMovieId, justDeletedId;
+    private long justDeletedFavMovieId, currentMovieId, justDeletedId;
     private String movieId;
     private Uri mCurrentItemUri;
     private ActivityDetailBinding mDetailBinding;
@@ -107,6 +107,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         super.onCreate(savedInstanceState);
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
@@ -130,21 +131,24 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             context = mDetailBinding.part1.poster.getContext();
             Picasso.with(context).load(poster).into(mDetailBinding.part1.poster);
 
-//            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
+            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
+            currentMovieId = Long.parseLong(MDB_CURRENT_MOVIE_ID);
 
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(false);
+
+            Boolean a = checkIfInFavorites();
             // wrong favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
             // Boolean aa = DetailActivity.favPrefs.getBoolean("On"+context, false);
-            Boolean a = FAVtoggleButton.isChecked();
+//            Boolean a = FAVtoggleButton.isChecked();
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
                 FAVtoggleButton.setChecked(true);
 
             } else {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_grey));
-                // FAVtoggleButton.setChecked(false);
+                FAVtoggleButton.setChecked(false);
             }
 //        FAVtoggleButton.setChecked(favPrefs.getBoolean("Off", false));
 //        FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_grey));
@@ -158,7 +162,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        //FAVtoggleButton.setChecked(readState());
                         FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_yellow));
                         SharedPreferences.Editor editor = favPrefs.edit();
                         editor.putBoolean("On", true);
@@ -169,26 +172,32 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                         SharedPreferences.Editor editor = favPrefs.edit();
                         editor.putBoolean("On", false);
                         editor.apply();
-                        deleteJustSaved(justSavedMovieId);
+                        delete(currentMovieId);
                     }
                 }
             });
         } else {
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
+            MDB_CURRENT_MOVIE_ID = intent.getStringExtra(FavouritesFragment.EXTRA_MOVIE_ID);
             getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
+            //TODO: check the passing from favourites fragment onclick method does not work
+            //TODO: check the saving and deleting
+            currentMovieId = Long.parseLong(MDB_CURRENT_MOVIE_ID);
+
             context = mDetailBinding.part2.favDetToggleButton.getContext();
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(true);
             // wrong favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
             // Boolean aa = DetailActivity.favPrefs.getBoolean("On"+context, false);
-            Boolean a = FAVtoggleButton.isChecked();
+            Boolean a = checkIfInFavoritesDb();
+//            Boolean a = true;
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
-                //FAVtoggleButton.setChecked(true);
+                FAVtoggleButton.setChecked(true);
             } else {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_grey));
-                //FAVtoggleButton.setChecked(false);
+                FAVtoggleButton.setChecked(false);
             }
             FAVtoggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -200,7 +209,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        //FAVtoggleButton.setChecked(readState());
+
                         FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_yellow));
                         SharedPreferences.Editor editor = favPrefs.edit();
                         editor.putBoolean("On", true);
@@ -211,7 +220,8 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                         SharedPreferences.Editor editor = favPrefs.edit();
                         editor.putBoolean("On", false);
                         editor.apply();
-                        deleteOneItem(justDeletedFavMovieId);
+                        delete(currentMovieId);
+//                        finish();
                     }
                 }
             });
@@ -233,6 +243,54 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         Log.i(LOG_TAG, "initClipsLoader");
     }
 
+    private boolean checkIfInFavorites() {
+        Cursor cur = getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
+
+        ArrayList<String> favsTempList = new ArrayList<>();
+        boolean favourite = false;
+        if (cur != null) {
+            while (cur.moveToNext()) {
+                String i = cur.getString(cur.getColumnIndex(COLUMN_MOVIE_ID));
+                favsTempList.add(i);
+            }
+        }
+
+        for (int i = 0; i < favsTempList.size(); i++) {
+            if (favsTempList.get(i).equals(movieId)) {
+                favourite = true;
+            }
+        }
+        if (cur != null) {
+            cur.close();
+        }
+        return favourite;
+    }
+
+    private boolean checkIfInFavoritesDb() {
+        Cursor cur = getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
+
+        ArrayList<String> favsTempList = new ArrayList<>();
+        boolean favourite = false;
+        if (cur != null) {
+            while (cur.moveToNext()) {
+                String i = cur.getString(cur.getColumnIndex(COLUMN_MOVIE_ID));
+                favsTempList.add(i);
+            }
+        }
+
+        for (int i = 0; i < favsTempList.size(); i++) {
+            if (favsTempList.get(i).equals(MDB_CURRENT_MOVIE_ID)) {
+                favourite = true;
+            }
+        }
+        if (cur != null) {
+            cur.close();
+        }
+        return favourite;
+    }
+
+
+
     public void deleteOneItem(long id) {
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
@@ -245,7 +303,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         justDeletedPoster = dBposter;
     }
 
-    public void deleteJustSaved(long id) {
+    public void delete(long id) {
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
@@ -290,7 +348,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 Toast.makeText(this, getString(R.string.editor_insert_item_success), Toast.LENGTH_SHORT).show();
 //                finish();
             }
-            justSavedMovieId = Long.parseLong(movieId);
+            currentMovieId = Long.parseLong(movieId);
         }
     }
 
@@ -436,8 +494,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             mDetailBinding.part2.rating.setText(dBvote);
             mDetailBinding.part3.overview2.setText(dBoverview);
 
-            justDeletedFavMovieId = Long.parseLong(movieIdFav);
-            MDB_CURRENT_MOVIE_ID = movieIdFav;
         }
     }
 

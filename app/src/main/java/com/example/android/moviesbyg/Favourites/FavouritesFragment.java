@@ -33,8 +33,8 @@ import com.example.android.moviesbyg.R;
 
 public class FavouritesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-
     public static final String LOG_TAG = FavouritesFragment.class.getName();
+    public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
     private static final int FAV_LOADER = 0;
     private static final String[] PROJECTION1 = {
             FavouritesContract.FavouritesEntry._ID,
@@ -45,11 +45,9 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
             FavouritesContract.FavouritesEntry.COLUMN_OVERVIEW,
             FavouritesContract.FavouritesEntry.COLUMN_POSTER
     };
-
-    private static final String[] PROJECTION2 = {
+    private static final String[] PROJECTION = {
             FavouritesContract.FavouritesEntry._ID,
             FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
-
     };
     //   Just a rough idea how to sort in query
     private static final String SORT_ORDER = FavouritesContract.FavouritesEntry._ID + " DESC";
@@ -95,10 +93,6 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
     public Cursor querY() {
         return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, null, null, null, SORT_ORDER);
-    }
-
-    private Cursor queryMoviesId() {
-        return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION2, null, null, null);
     }
 
     void deleteOneItem(long id) {
@@ -210,7 +204,11 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
         Uri currentProductUri = ContentUris.withAppendedId(FavouritesContract.FavouritesEntry.CONTENT_URI, id);
         intent.setData(currentProductUri);
+        Cursor cursor = getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
 
+        String movieID = cursor.getString(cursor.getColumnIndex(FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID));
+
+        intent.putExtra(EXTRA_MOVIE_ID, movieID);
         startActivity(intent);
     }
 }

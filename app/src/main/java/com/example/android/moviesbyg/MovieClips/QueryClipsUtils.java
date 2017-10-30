@@ -58,7 +58,7 @@ public class QueryClipsUtils {
         Log.i(LOG_TAG, "fetchClips");
 
         try {
-            Thread.sleep(200);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

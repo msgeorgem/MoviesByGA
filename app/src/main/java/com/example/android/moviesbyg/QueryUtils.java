@@ -59,7 +59,7 @@ public class QueryUtils {
      * Query the USGS dataset and return an {@link ArrayList <SingleMovie>} object to represent a single news.
      */
     public static ArrayList<SingleMovie> fetchMoviesData(String requestUrl) {
-        Log.i(LOG_TAG,"fetchSingleNewsData");
+        Log.i(LOG_TAG, "fetchMovieData");
 
         try {
             Thread.sleep(200);
