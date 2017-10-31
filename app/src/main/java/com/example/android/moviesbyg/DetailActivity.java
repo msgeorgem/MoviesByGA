@@ -175,7 +175,9 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             MDB_CURRENT_MOVIE_ID = intent.getStringExtra(FavouritesFragment.EXTRA_MOVIE_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
             getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
-
+            // TODO: fix the internet connection problem
+            // TODO: Fix rotating reloading data coming from database
+            // TODO: rearange sizes and moving bar
             currentMovieId = Long.parseLong(movieId);
             currentTitle = intent.getStringExtra(FavouritesFragment.EXTRA_TITLE);
             currentReleaseDate = intent.getStringExtra(FavouritesFragment.EXTRA_RELEASE_DATE);
