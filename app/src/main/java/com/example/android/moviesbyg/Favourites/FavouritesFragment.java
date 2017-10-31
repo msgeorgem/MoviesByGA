@@ -27,6 +27,13 @@ import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.DividerItemDecoration;
 import com.example.android.moviesbyg.R;
 
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_OVERVIEW;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_POSTER;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_RELEASE_DATE;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_TILE;
+import static com.example.android.moviesbyg.DataFavs.FavouritesContract.FavouritesEntry.COLUMN_VOTE;
+
 /**
  * Created by Marcin on 2017-10-25.
  */
@@ -35,10 +42,16 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
     public static final String LOG_TAG = FavouritesFragment.class.getName();
     public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
+    public static final String EXTRA_TITLE = "EXTRA_TITLE";
+    public static final String EXTRA_RELEASE_DATE = "EXTRA_RELEASE_DATE";
+    public static final String EXTRA_VOTE = "EXTRA_VOTE";
+    public static final String EXTRA_OVERVIEW = "EXTRA_OVERVIEW";
+    public static final String EXTRA_POSTER = "EXTRA_POSTER";
+
     private static final int FAV_LOADER = 0;
     private static final String[] PROJECTION1 = {
             FavouritesContract.FavouritesEntry._ID,
-            FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
+            COLUMN_MOVIE_ID,
             FavouritesContract.FavouritesEntry.COLUMN_TILE,
             FavouritesContract.FavouritesEntry.COLUMN_RELEASE_DATE,
             FavouritesContract.FavouritesEntry.COLUMN_VOTE,
@@ -47,8 +60,9 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     };
     private static final String[] PROJECTION = {
             FavouritesContract.FavouritesEntry._ID,
-            FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
+            COLUMN_MOVIE_ID,
     };
+
     //   Just a rough idea how to sort in query
     private static final String SORT_ORDER = FavouritesContract.FavouritesEntry._ID + " DESC";
     private static final String BUNDLE_RECYCLER_LAYOUT = "FavouritesFragment.moviesRecyclerView";
@@ -202,13 +216,45 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     public void onItemClick(long id) {
         Intent intent = new Intent(getActivity(), DetailActivity.class);
 
+        String specificID = String.valueOf(id);
+        String mSelectionClause = FavouritesContract.FavouritesEntry._ID;
+        try {
+            Cursor cursor = getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION1, mSelectionClause + " = '" + specificID + "'", null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int movieColumnIndex = cursor.getColumnIndex(COLUMN_MOVIE_ID);
+                    int titleColumnIndex = cursor.getColumnIndex(COLUMN_TILE);
+                    int releaseColumnIndex = cursor.getColumnIndex(COLUMN_RELEASE_DATE);
+                    int voteColumnIndex = cursor.getColumnIndex(COLUMN_VOTE);
+                    int overviewColumnIndex = cursor.getColumnIndex(COLUMN_OVERVIEW);
+                    int posterColumnIndex = cursor.getColumnIndex(COLUMN_POSTER);
+
+                    String movieID = cursor.getString(movieColumnIndex);
+                    String movieTitle = cursor.getString(titleColumnIndex);
+                    String movieRelease = cursor.getString(releaseColumnIndex);
+                    String movieVote = cursor.getString(voteColumnIndex);
+                    String movieOverview = cursor.getString(overviewColumnIndex);
+                    String moviePoster = cursor.getString(posterColumnIndex);
+
+                    intent.putExtra(EXTRA_MOVIE_ID, movieID);
+                    intent.putExtra(EXTRA_TITLE, movieTitle);
+                    intent.putExtra(EXTRA_RELEASE_DATE, movieRelease);
+                    intent.putExtra(EXTRA_VOTE, movieVote);
+                    intent.putExtra(EXTRA_OVERVIEW, movieOverview);
+                    intent.putExtra(EXTRA_POSTER, moviePoster);
+
+                } while (cursor.moveToNext());
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
+
+        } catch (Exception e) {
+            Log.e("Path Error", e.toString());
+        }
+
         Uri currentProductUri = ContentUris.withAppendedId(FavouritesContract.FavouritesEntry.CONTENT_URI, id);
         intent.setData(currentProductUri);
-        Cursor cursor = getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
-
-        String movieID = cursor.getString(cursor.getColumnIndex(FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID));
-
-        intent.putExtra(EXTRA_MOVIE_ID, movieID);
         startActivity(intent);
     }
 }

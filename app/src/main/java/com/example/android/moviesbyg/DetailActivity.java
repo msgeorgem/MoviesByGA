@@ -19,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,9 +31,7 @@ import android.widget.ToggleButton;
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
 import com.example.android.moviesbyg.Favourites.FavouritesFragment;
 import com.example.android.moviesbyg.MovieClips.ClipsFragment;
-import com.example.android.moviesbyg.MovieReviews.MovieReviewsAdapter;
 import com.example.android.moviesbyg.MovieReviews.ReviewsFragment;
-import com.example.android.moviesbyg.MovieReviews.SingleMovieReview;
 import com.example.android.moviesbyg.databinding.ActivityDetailBinding;
 import com.squareup.picasso.Picasso;
 
@@ -78,21 +75,17 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     Parcelable state;
     SQLiteDatabase mDb;
     private String mMovieSummary;
-    private MovieReviewsAdapter mAdapterR;
-    private RecyclerView reviewsRecyclerView;
-    private ArrayList<SingleMovieReview> reviewsList = new ArrayList<>();
+
     private Context context;
     private Cursor cursor;
     private ClipsFragment mClipsFragment;
     private ReviewsFragment mReviewsFragment;
     private ToggleButton FAVtoggleButton;
     private boolean mMovieFav = false;
-    private String title, releaseDate, vote, overview, poster;
+    private String currentTitle, currentReleaseDate, currentVote, currentOverview, currentPoster;
     private String dBtitle, dBrelease, dBvote, dBoverview, dBposter;
-    private String justDeletedMovieId, justDeletedTitle, justDeletedReleaseDate,
-            justDeletedVote, justDeletedOverview, justDeletedPoster;
-    private int id;
-    private long justDeletedFavMovieId, currentMovieId, justDeletedId;
+    private int id, currentId;
+    private long currentMovieId;
     private String movieId;
     private Uri mCurrentItemUri;
     private ActivityDetailBinding mDetailBinding;
@@ -115,25 +108,25 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         mCurrentItemUri = intent.getData();
 
         if (mCurrentItemUri == null) {
-            title = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
-            mDetailBinding.part2.title.setText(title);
+            currentTitle = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
+            mDetailBinding.part2.title.setText(currentTitle);
 
-            releaseDate = getIntent().getStringExtra(MoviesAdapter.EXTRA_RELEASE_DATE);
-            mDetailBinding.part2.releaseDate.setText(releaseDate);
+            currentReleaseDate = getIntent().getStringExtra(MoviesAdapter.EXTRA_RELEASE_DATE);
+            mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
 
-            vote = getIntent().getStringExtra(MoviesAdapter.EXTRA_VOTE);
-            mDetailBinding.part2.rating.setText(vote);
+            currentVote = getIntent().getStringExtra(MoviesAdapter.EXTRA_VOTE);
+            mDetailBinding.part2.rating.setText(currentVote);
 
-            overview = getIntent().getStringExtra(MoviesAdapter.EXTRA_OVERVIEW);
-            mDetailBinding.part3.overview2.setText(overview);
+            currentOverview = getIntent().getStringExtra(MoviesAdapter.EXTRA_OVERVIEW);
+            mDetailBinding.part3.overview2.setText(currentOverview);
 
-            poster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
+            currentPoster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
             context = mDetailBinding.part1.poster.getContext();
-            Picasso.with(context).load(poster).into(mDetailBinding.part1.poster);
+            Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
 
             MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
-            currentMovieId = Long.parseLong(MDB_CURRENT_MOVIE_ID);
+            currentMovieId = Long.parseLong(movieId);
 
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(false);
@@ -180,17 +173,22 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
             MDB_CURRENT_MOVIE_ID = intent.getStringExtra(FavouritesFragment.EXTRA_MOVIE_ID);
+            movieId = MDB_CURRENT_MOVIE_ID;
             getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
-            //TODO: check the passing from favourites fragment onclick method does not work
-            //TODO: check the saving and deleting
-            currentMovieId = Long.parseLong(MDB_CURRENT_MOVIE_ID);
+
+            currentMovieId = Long.parseLong(movieId);
+            currentTitle = intent.getStringExtra(FavouritesFragment.EXTRA_TITLE);
+            currentReleaseDate = intent.getStringExtra(FavouritesFragment.EXTRA_RELEASE_DATE);
+            currentVote = intent.getStringExtra(FavouritesFragment.EXTRA_VOTE);
+            currentOverview = intent.getStringExtra(FavouritesFragment.EXTRA_OVERVIEW);
+            currentPoster = intent.getStringExtra(FavouritesFragment.EXTRA_POSTER);
 
             context = mDetailBinding.part2.favDetToggleButton.getContext();
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(true);
             // wrong favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
             // Boolean aa = DetailActivity.favPrefs.getBoolean("On"+context, false);
-            Boolean a = checkIfInFavoritesDb();
+            Boolean a = checkIfInFavorites();
 //            Boolean a = true;
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
@@ -205,7 +203,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
 
                     if (isChecked) {
                         try {
-                            saveJustDeletedMovie();
+                            saveItem();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -221,7 +219,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                         editor.putBoolean("On", false);
                         editor.apply();
                         delete(currentMovieId);
-//                        finish();
                     }
                 }
             });
@@ -239,7 +236,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 .replace(mDetailBinding.part5.reviewsContainer.getId(), mReviewsFragment, mReviewsFragment.getTag())
                 .commit();
 
-        mMovieSummary = title + "" + releaseDate + "" + overview;
+        mMovieSummary = currentTitle + "" + currentReleaseDate + "" + currentOverview;
         Log.i(LOG_TAG, "initClipsLoader");
     }
 
@@ -266,106 +263,21 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         return favourite;
     }
 
-    private boolean checkIfInFavoritesDb() {
-        Cursor cur = getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
-
-        ArrayList<String> favsTempList = new ArrayList<>();
-        boolean favourite = false;
-        if (cur != null) {
-            while (cur.moveToNext()) {
-                String i = cur.getString(cur.getColumnIndex(COLUMN_MOVIE_ID));
-                favsTempList.add(i);
-            }
-        }
-
-        for (int i = 0; i < favsTempList.size(); i++) {
-            if (favsTempList.get(i).equals(MDB_CURRENT_MOVIE_ID)) {
-                favourite = true;
-            }
-        }
-        if (cur != null) {
-            cur.close();
-        }
-        return favourite;
-    }
-
-
-
-    public void deleteOneItem(long id) {
-        int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
-        Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
-        justDeletedId = id;
-        justDeletedMovieId = movieIdFav;
-        justDeletedTitle = dBtitle;
-        justDeletedReleaseDate = dBrelease;
-        justDeletedVote = dBvote;
-        justDeletedOverview = dBoverview;
-        justDeletedPoster = dBposter;
-    }
-
     public void delete(long id) {
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
 
-
     // Get user input from editor and save item into database.
     private void saveItem() throws IOException {
 
-        //TODO: add condition if added movie exists in favorites table, if exists change BOOLEAN to true
-        // Read from input getintent
-        //       String movieIdInt = getString(movieId);
-
-        if (mMovieFav) {
-            Toast.makeText(this, R.string.editor_update_item_failed, Toast.LENGTH_SHORT).show();
-            // Since no fields were modified, we can return early without creating a new item.
-            // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
-
-        } else {
-            // if (TextUtils.isEmpty(movieIdInt)) {
-            //     Toast.makeText(this, getString(R.string.movieId_required), Toast.LENGTH_SHORT).show();
-            //    return;
-            //}
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_MOVIE_ID, movieId);
-            values.put(COLUMN_TILE, title);
-            values.put(COLUMN_RELEASE_DATE, releaseDate);
-            values.put(COLUMN_VOTE, vote);
-            values.put(COLUMN_OVERVIEW, overview);
-            values.put(COLUMN_POSTER, poster);
-
-            // This is a NEW item, so insert a new item into the provider,
-            // returning the content URI for the item item.
-            Uri newUri = getContentResolver().insert(CONTENT_URI, values);
-
-            // Show a toast message depending on whether or not the insertion was successful.
-            if (newUri == null) {
-                // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_item_failed), Toast.LENGTH_SHORT).show();
-            } else {
-                // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_item_success), Toast.LENGTH_SHORT).show();
-//                finish();
-            }
-            currentMovieId = Long.parseLong(movieId);
-        }
-    }
-
-    // Get user input from editor and save item into database.
-    private void saveJustDeletedMovie() throws IOException {
-
-        // if (TextUtils.isEmpty(movieIdInt)) {
-        //     Toast.makeText(this, getString(R.string.movieId_required), Toast.LENGTH_SHORT).show();
-        //    return;
-        //}
         ContentValues values = new ContentValues();
-        values.put(COLUMN_MOVIE_ID, justDeletedMovieId);
-        values.put(COLUMN_TILE, justDeletedTitle);
-        values.put(COLUMN_RELEASE_DATE, justDeletedReleaseDate);
-        values.put(COLUMN_VOTE, justDeletedVote);
-        values.put(COLUMN_OVERVIEW, justDeletedOverview);
-        values.put(COLUMN_POSTER, justDeletedPoster);
+        values.put(COLUMN_MOVIE_ID, movieId);
+        values.put(COLUMN_TILE, currentTitle);
+        values.put(COLUMN_RELEASE_DATE, currentReleaseDate);
+        values.put(COLUMN_VOTE, currentVote);
+        values.put(COLUMN_OVERVIEW, currentOverview);
+        values.put(COLUMN_POSTER, currentPoster);
 
         // This is a NEW item, so insert a new item into the provider,
         // returning the content URI for the item item.
@@ -378,8 +290,8 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         } else {
             // Otherwise, the insertion was successful and we can display a toast.
             Toast.makeText(this, getString(R.string.editor_insert_item_success), Toast.LENGTH_SHORT).show();
-//                finish();
         }
+        currentMovieId = Long.parseLong(movieId);
     }
 
     @Override

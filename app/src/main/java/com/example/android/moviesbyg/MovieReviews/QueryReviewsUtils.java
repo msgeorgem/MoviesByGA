@@ -52,7 +52,7 @@ public class QueryReviewsUtils {
         Log.i(LOG_TAG, "fetchReviews");
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
