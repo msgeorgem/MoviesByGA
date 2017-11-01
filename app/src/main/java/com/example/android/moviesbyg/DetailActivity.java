@@ -11,12 +11,9 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,8 +46,7 @@ import static com.example.android.moviesbyg.DataFavs.FavouritesContract.Favourit
  * Created by Marcin on 2017-09-10.
  */
 
-public class DetailActivity extends AppCompatActivity implements ClipsFragment.OnFragmentInteractionListenerC, ReviewsFragment.OnFragmentInteractionListenerR,
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailActivity extends AppCompatActivity implements ClipsFragment.OnFragmentInteractionListenerC, ReviewsFragment.OnFragmentInteractionListenerR {
 
 
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
@@ -80,7 +76,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private ReviewsFragment mReviewsFragment;
     private ToggleButton FAVtoggleButton;
     private String currentTitle, currentReleaseDate, currentVote, currentOverview, currentPoster;
-    private String justDeletedTitle, justDeletedReleaseDate, justDeletedVote, justDeletedOverview, justDeletedPoster;
     private String dBtitle, dBrelease, dBvote, dBoverview, dBposter;
     private int id, currentId;
     private long currentMovieId, justDeletedMovieId;
@@ -178,21 +173,21 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             context = mDetailBinding.part1.poster.getContext();
             Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
 
-            if (mCurrentItemUri == null) {
-
-                mDetailBinding.part2.title.setText(currentTitle);
-                mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
-                mDetailBinding.part2.rating.setText(currentVote);
-                mDetailBinding.part3.overview2.setText(currentOverview);
-                context = mDetailBinding.part1.poster.getContext();
-                Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
-
-            } else {
-                getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
+//            if (mCurrentItemUri == null) {
+//
+//                mDetailBinding.part2.title.setText(currentTitle);
+//                mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
+//                mDetailBinding.part2.rating.setText(currentVote);
+//                mDetailBinding.part3.overview2.setText(currentOverview);
+//                context = mDetailBinding.part1.poster.getContext();
+//                Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
+////
+//            } else {
+//                getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
                 currentMovieId = Long.parseLong(movieId);
 //                Long tempMovieId = checkIfDeleted(currentMovieId);
 //                currentMovieId = tempMovieId;
-            }
+//            }
             context = mDetailBinding.part2.favDetToggleButton.getContext();
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(true);
@@ -277,16 +272,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
-//    public void deleteFav(long id) {
-//        int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
-//        Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
-//        justDeletedMovieId = id;
-//        justDeletedTitle = currentTitle;
-//        justDeletedReleaseDate = currentReleaseDate;
-//        justDeletedVote = currentVote;
-//        justDeletedOverview = currentOverview;
-//        justDeletedPoster = currentPoster;
-//    }
+
 //    private long checkIfDeleted(Long movieId){
 //        long tempId = 0;
 //        if(!(movieId == null) || !(movieId == 0)){
@@ -375,72 +361,72 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         return shareIntent;
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Since the editor shows all item attributes, define a PROJECTION that contains
-        // all columns from the items table
-        String[] projection = {
-                FavouritesContract.FavouritesEntry._ID,
-                COLUMN_MOVIE_ID,
-                COLUMN_TILE,
-                COLUMN_RELEASE_DATE,
-                COLUMN_VOTE,
-                COLUMN_OVERVIEW,
-                COLUMN_POSTER};
-
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentItemUri,         // Query the content URI for the current item
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        // Bail early if the cursor is null or there is less than 1 row in the cursor
-        if (cursor == null || cursor.getCount() < 1) {
-            return;
-        }
-
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
-        if (cursor.moveToFirst()) {
-            // Find the columns of item attributes that we're interested in
-            id = cursor.getInt(cursor.getColumnIndex(FavouritesContract.FavouritesEntry._ID));
-            int movieColumnIndex = cursor.getColumnIndex(COLUMN_MOVIE_ID);
-            int titleColumnIndex = cursor.getColumnIndex(COLUMN_TILE);
-            int releaseColumnIndex = cursor.getColumnIndex(COLUMN_RELEASE_DATE);
-            int voteColumnIndex = cursor.getColumnIndex(COLUMN_VOTE);
-            int overviewColumnIndex = cursor.getColumnIndex(COLUMN_OVERVIEW);
-            int posterColumnIndex = cursor.getColumnIndex(COLUMN_POSTER);
-
-            // Extract out the value from the Cursor for the given column index
-            movieIdFav = cursor.getString(movieColumnIndex);
-            dBtitle = cursor.getString(titleColumnIndex);
-            dBrelease = cursor.getString(releaseColumnIndex);
-            dBvote = cursor.getString(voteColumnIndex);
-            dBoverview = cursor.getString(overviewColumnIndex);
-            dBposter = cursor.getString(posterColumnIndex);
-
-            final Context context = mDetailBinding.part1.poster.getContext();
-            Picasso.with(context).load(dBposter).into(mDetailBinding.part1.poster);
-
-            // Update the views on the screen with the values from the database
-            mDetailBinding.part2.title.setText(dBtitle);
-            mDetailBinding.part2.releaseDate.setText(dBrelease);
-            mDetailBinding.part2.rating.setText(dBvote);
-            mDetailBinding.part3.overview2.setText(dBoverview);
-
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        Log.i(LOG_TAG, "onLoaderReset");
-
-    }
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//        // Since the editor shows all item attributes, define a PROJECTION that contains
+//        // all columns from the items table
+//        String[] projection = {
+//                FavouritesContract.FavouritesEntry._ID,
+//                COLUMN_MOVIE_ID,
+//                COLUMN_TILE,
+//                COLUMN_RELEASE_DATE,
+//                COLUMN_VOTE,
+//                COLUMN_OVERVIEW,
+//                COLUMN_POSTER};
+//
+//        // This loader will execute the ContentProvider's query method on a background thread
+//        return new CursorLoader(this,   // Parent activity context
+//                mCurrentItemUri,         // Query the content URI for the current item
+//                projection,             // Columns to include in the resulting Cursor
+//                null,                   // No selection clause
+//                null,                   // No selection arguments
+//                null);                  // Default sort order
+//    }
+//
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+//        // Bail early if the cursor is null or there is less than 1 row in the cursor
+//        if (cursor == null || cursor.getCount() < 1) {
+//            return;
+//        }
+//
+//        // Proceed with moving to the first row of the cursor and reading data from it
+//        // (This should be the only row in the cursor)
+//        if (cursor.moveToFirst()) {
+//            // Find the columns of item attributes that we're interested in
+//            id = cursor.getInt(cursor.getColumnIndex(FavouritesContract.FavouritesEntry._ID));
+//            int movieColumnIndex = cursor.getColumnIndex(COLUMN_MOVIE_ID);
+//            int titleColumnIndex = cursor.getColumnIndex(COLUMN_TILE);
+//            int releaseColumnIndex = cursor.getColumnIndex(COLUMN_RELEASE_DATE);
+//            int voteColumnIndex = cursor.getColumnIndex(COLUMN_VOTE);
+//            int overviewColumnIndex = cursor.getColumnIndex(COLUMN_OVERVIEW);
+//            int posterColumnIndex = cursor.getColumnIndex(COLUMN_POSTER);
+//
+//            // Extract out the value from the Cursor for the given column index
+//            movieIdFav = cursor.getString(movieColumnIndex);
+//            dBtitle = cursor.getString(titleColumnIndex);
+//            dBrelease = cursor.getString(releaseColumnIndex);
+//            dBvote = cursor.getString(voteColumnIndex);
+//            dBoverview = cursor.getString(overviewColumnIndex);
+//            dBposter = cursor.getString(posterColumnIndex);
+//
+//            final Context context = mDetailBinding.part1.poster.getContext();
+//            Picasso.with(context).load(dBposter).into(mDetailBinding.part1.poster);
+//
+//            // Update the views on the screen with the values from the database
+//            mDetailBinding.part2.title.setText(dBtitle);
+//            mDetailBinding.part2.releaseDate.setText(dBrelease);
+//            mDetailBinding.part2.rating.setText(dBvote);
+//            mDetailBinding.part3.overview2.setText(dBoverview);
+//
+//        }
+//    }
+//
+//    @Override
+//    public void onLoaderReset(Loader<Cursor> loader) {
+//        Log.i(LOG_TAG, "onLoaderReset");
+//
+//    }
 
     @Override
     public void onStop() {
