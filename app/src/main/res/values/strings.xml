@@ -20,6 +20,8 @@
     <string name="content_authority">com.example.marcin.moviesbyga</string>
     <string name="action_share">Share</string>
     <string name="no_internet">No internet connection.</string>
+    <string name="no_favourites">Favourites list is empty. You can add movie to favourites by
+        turning star yellow. Just click it! </string>
     <string name="base_url_youtube">https://www.youtube.com/watch?v=</string>
 
     <string name="category_Movies">IMDB</string>

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
@@ -67,8 +68,9 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     private static final String SORT_ORDER = FavouritesContract.FavouritesEntry._ID + " DESC";
     private static final String BUNDLE_RECYCLER_LAYOUT = "FavouritesFragment.moviesRecyclerView";
     public FavouritesCursorAdapter mFavsAdapter;
-    View mEmptyStateTextView, mloadingIndicator;
     Parcelable state;
+    private View mloadingIndicator;
+    private TextView mEmptyStateTextView;
     private View view;
     //    private static final String SELECTION = FavouritesContract.FavouritesEntry.getGreaterThanZero();
     private RecyclerView favouritesRecyclerView;
@@ -99,6 +101,8 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         favouritesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mEmptyStateTextView = view.findViewById(R.id.empty_view_favs);
+        mEmptyStateTextView.setText(R.string.no_favourites);
+
         mloadingIndicator = view.findViewById(R.id.loading_indicator_favs);
         //kick off the loader
         getLoaderManager().initLoader(FAV_LOADER, null, this);
@@ -190,7 +194,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         // Update {@link ItemCursor Adapter with this new cursor containing updated item data
         if (!data.moveToFirst()) {
             mEmptyStateTextView.setVisibility(View.VISIBLE);
-            mloadingIndicator.setVisibility(View.VISIBLE);
+            mloadingIndicator.setVisibility(View.GONE);
         } else {
             mEmptyStateTextView.setVisibility(View.GONE);
             mloadingIndicator.setVisibility(View.GONE);

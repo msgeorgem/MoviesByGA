@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppThemeNoBar">
         <activity android:name=".MoviesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MoviesActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppThemeNoBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MoviesActivity"/>
@@ -32,7 +32,8 @@
 
         <activity
             android:name="com.example.android.moviesbyg.SettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.moviesbyg.MoviesActivity" />

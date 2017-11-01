@@ -53,7 +53,7 @@ public class MovieClipsAdapter extends RecyclerView.Adapter<MovieClipsAdapter.Cl
 
         viewHolder.nameTextView.setText(movieClip.getClipName());
         viewHolder.typeTextView.setText(movieClip.getClipType());
-        viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {

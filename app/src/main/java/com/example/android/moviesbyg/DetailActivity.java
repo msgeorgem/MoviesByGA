@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -80,19 +79,14 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private ClipsFragment mClipsFragment;
     private ReviewsFragment mReviewsFragment;
     private ToggleButton FAVtoggleButton;
-    private boolean mMovieFav = false;
     private String currentTitle, currentReleaseDate, currentVote, currentOverview, currentPoster;
+    private String justDeletedTitle, justDeletedReleaseDate, justDeletedVote, justDeletedOverview, justDeletedPoster;
     private String dBtitle, dBrelease, dBvote, dBoverview, dBposter;
     private int id, currentId;
-    private long currentMovieId;
+    private long currentMovieId, justDeletedMovieId;
     private String movieId;
     private Uri mCurrentItemUri;
     private ActivityDetailBinding mDetailBinding;
-    /**
-     * TextView that is displayed when the list is empty
-     */
-
-    private TextView mEmptyStateTextView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +124,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
             currentMovieId = Long.parseLong(movieId);
-
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(false);
 
@@ -170,20 +163,36 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 }
             });
         } else {
-            // Initialize a loader to read the item data from the database
-            // and display the current values in the editor
+
             MDB_CURRENT_MOVIE_ID = intent.getStringExtra(FavouritesFragment.EXTRA_MOVIE_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
-            getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
-            // TODO: Fix rotating reloading data coming from database
-            // TODO: rearange sizes and moving bar
-            currentMovieId = Long.parseLong(movieId);
             currentTitle = intent.getStringExtra(FavouritesFragment.EXTRA_TITLE);
             currentReleaseDate = intent.getStringExtra(FavouritesFragment.EXTRA_RELEASE_DATE);
             currentVote = intent.getStringExtra(FavouritesFragment.EXTRA_VOTE);
             currentOverview = intent.getStringExtra(FavouritesFragment.EXTRA_OVERVIEW);
             currentPoster = intent.getStringExtra(FavouritesFragment.EXTRA_POSTER);
+            mDetailBinding.part2.title.setText(currentTitle);
+            mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
+            mDetailBinding.part2.rating.setText(currentVote);
+            mDetailBinding.part3.overview2.setText(currentOverview);
+            context = mDetailBinding.part1.poster.getContext();
+            Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
 
+            if (mCurrentItemUri == null) {
+
+                mDetailBinding.part2.title.setText(currentTitle);
+                mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
+                mDetailBinding.part2.rating.setText(currentVote);
+                mDetailBinding.part3.overview2.setText(currentOverview);
+                context = mDetailBinding.part1.poster.getContext();
+                Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
+
+            } else {
+                getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
+                currentMovieId = Long.parseLong(movieId);
+//                Long tempMovieId = checkIfDeleted(currentMovieId);
+//                currentMovieId = tempMovieId;
+            }
             context = mDetailBinding.part2.favDetToggleButton.getContext();
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(true);
@@ -268,6 +277,24 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
+//    public void deleteFav(long id) {
+//        int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
+//        Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
+//        justDeletedMovieId = id;
+//        justDeletedTitle = currentTitle;
+//        justDeletedReleaseDate = currentReleaseDate;
+//        justDeletedVote = currentVote;
+//        justDeletedOverview = currentOverview;
+//        justDeletedPoster = currentPoster;
+//    }
+//    private long checkIfDeleted(Long movieId){
+//        long tempId = 0;
+//        if(!(movieId == null) || !(movieId == 0)){
+//            Log.i(LOG_TAG, "not null or zero");
+//            tempId = movieId;
+//        } else tempId = justDeletedMovieId;
+//        return tempId;
+//    };
 
     // Get user input from editor and save item into database.
     private void saveItem() throws IOException {
@@ -295,7 +322,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         currentMovieId = Long.parseLong(movieId);
     }
 
-    //TODO RESTORE PAUSE RESUME ITD
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -309,7 +335,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, ClipsFragment.clipsRecyclerView.getLayoutManager().onSaveInstanceState());
-
     }
 
     @Override

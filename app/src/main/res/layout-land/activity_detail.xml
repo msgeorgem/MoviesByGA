@@ -21,7 +21,7 @@
                 android:layout_height="35dp"
                 android:background="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar" />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.widget.NestedScrollView
