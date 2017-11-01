@@ -45,14 +45,17 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     private TextView mEmptyStateTextView;
 
+
     public IMDBOnlineFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_movies, container, false);
+        Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
 
@@ -64,22 +67,14 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
             // because this activity implements the LoaderCallbacks interface).
             loaderManager.initLoader(MOVIES_LOADER_ID, null, this);
         } else {
+            mEmptyStateTextView = view.findViewById(R.id.empty_view);
+            mEmptyStateTextView.setText(R.string.no_internet);
             // Otherwise, display error
             // First, hide loading indicator so error message will be visible
             View loadingIndicator = view.findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
             // Set empty state text to display "No internet connection"
-            mEmptyStateTextView.setText(R.string.no_internet);
         }
-    }
-
-    @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_movies, container, false);
-        Log.i(LOG_TAG, "initLoader");
-
         // Find a reference to the {@link ListView} in the layout
         moviesRecyclerView = view.findViewById(R.id.list_item);
 
@@ -97,7 +92,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mEmptyStateTextView = view.findViewById(R.id.empty_view);
+
         return view;
     }
 

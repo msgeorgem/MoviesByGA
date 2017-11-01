@@ -4,54 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-import java.util.ArrayList;
 
 public class MoviesActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MoviesActivity.class.getName();
-    public static final String EXTRA_POSTER = "EXTRA_POSTER";
-    public static final String EXTRA_TITLE = "EXTRA_TITLE";
-    public static final String EXTRA_DESCRIPTION = "EXTRA_DESCRIPTION";
-    private static final String BUNDLE_RECYCLER_LAYOUT = "MoviesActivity.moviesRecyclerView.activity_movies";
-    /**
-     * Constant value for the news loader ID. We can choose any integer.
-     * This really only comes into play if you're using multiple loaders.
-     */
-    private static final int MOVIES_LOADER_ID = 1;
-    private static final String URL =
-            "https://api.themoviedb.org/3/discover/movie?";
-    private static final String QUERY_BASE_URL = URL;
-    /* API_KEY gained from themoviedb.org */
-    private static final String API_KEY = "api_key";
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
-    private static final String SORT_BY = "sort_by";
-    private static final String BY_VOTE = "vote_average.desc";
-    private static final String BY_POPULARITY = "popularity.desc";
     public static ConnectivityManager cm;
-
-
-    /**
-     * Adapter for the list of movies
-     */
-    public MoviesAdapter mAdapter;
-    Parcelable state;
-    private GridLayoutManager mLayoutManager;
-    private RecyclerView moviesRecyclerView;
-    private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
-    /**
-     * TextView that is displayed when the list is empty
-     */
-    private TextView mEmptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +45,9 @@ public class MoviesActivity extends AppCompatActivity {
             }
         });
 
-
         cm = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,5 +65,4 @@ public class MoviesActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

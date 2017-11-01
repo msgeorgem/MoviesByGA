@@ -54,11 +54,11 @@ public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallb
         // Required empty public constructor
     }
 
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_clips, container, false);
         // Get details on the currently active default data network
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
         QUERY_BASE_URL_C = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_MOVIE_PATH2;
@@ -72,31 +72,22 @@ public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallb
             // because this activity implements the LoaderCallbacks interface).
             loaderManager.initLoader(CLIPS_LOADER_ID, null, ClipsFragment.this);
 
-
         } else {
             // Otherwise, display error
             // First, hide loading indicator so error message will be visible
             View loadingIndicator1 = view.findViewById(R.id.loading_indicator1);
             loadingIndicator1.setVisibility(View.GONE);
             // Set empty state text to display "No internet connection"
+            mEmptyStateTextView1 = view.findViewById(R.id.empty_view1);
             mEmptyStateTextView1.setText(R.string.no_internet);
         }
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_clips, container, false);
         clipsRecyclerView = view.findViewById(R.id.list_videos);
         clipsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapterC = new MovieClipsAdapter(clipsList);
         clipsRecyclerView.setAdapter(mAdapterC);
         clipsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         clipsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        mEmptyStateTextView1 = view.findViewById(R.id.empty_view1);
 
         return view;
     }
@@ -135,7 +126,6 @@ public class ClipsFragment extends Fragment implements LoaderManager.LoaderCallb
 
         clipsRecyclerView.setVisibility(View.VISIBLE);
         mAdapterC = new MovieClipsAdapter(clipsList);
-
 
         // If there is a valid list of {@link Movies}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.

@@ -101,7 +101,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
@@ -175,7 +174,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             MDB_CURRENT_MOVIE_ID = intent.getStringExtra(FavouritesFragment.EXTRA_MOVIE_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
             getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
-            // TODO: fix the internet connection problem
             // TODO: Fix rotating reloading data coming from database
             // TODO: rearange sizes and moving bar
             currentMovieId = Long.parseLong(movieId);
@@ -296,6 +294,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         currentMovieId = Long.parseLong(movieId);
     }
 
+    //TODO RESTORE PAUSE RESUME ITD
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);

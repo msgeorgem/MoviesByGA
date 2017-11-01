@@ -55,8 +55,11 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_reviews, container, false);
+
         // Get details on the currently active default data network
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
         QUERY_BASE_URL_R = MDB_MOVIE_PATH1 + MDB_CURRENT_MOVIE_ID + MDB_REVIEWS_PATH2;
@@ -70,30 +73,22 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
             // because this activity implements the LoaderCallbacks interface).
             loaderManager.initLoader(REVIEWS_LOADER_ID, null, ReviewsFragment.this);
 
-
         } else {
             // Otherwise, display error
             // First, hide loading indicator so error message will be visible
             View loadingIndicator1 = view.findViewById(R.id.loading_indicator2);
             loadingIndicator1.setVisibility(View.GONE);
             // Set empty state text to display "No internet connection"
+            mEmptyStateTextView2 = view.findViewById(R.id.empty_view2);
             mEmptyStateTextView2.setText(R.string.no_internet);
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_reviews, container, false);
         reviewsRecyclerView = view.findViewById(R.id.list_reviews);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapterR = new MovieReviewsAdapter(reviewsList);
         reviewsRecyclerView.setAdapter(mAdapterR);
         reviewsRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         reviewsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        mEmptyStateTextView2 = view.findViewById(R.id.empty_view2);
 
         return view;
     }
@@ -153,10 +148,8 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onPause() {
         super.onPause();
-
         // save RecyclerView state
         state = reviewsRecyclerView.getLayoutManager().onSaveInstanceState();
-
     }
 
     @Override
