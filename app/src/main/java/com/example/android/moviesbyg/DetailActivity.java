@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,7 +73,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     private static String movieIdFav;
     private final String MDB_SHARE_HASHTAG = "IMDB Source";
     Parcelable state;
-    SQLiteDatabase mDb;
     private String mMovieSummary;
 
     private Context context;
@@ -99,7 +98,12 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Find the toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
@@ -131,9 +135,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             FAVtoggleButton.setChecked(false);
 
             Boolean a = checkIfInFavorites();
-            // wrong favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
-            // Boolean aa = DetailActivity.favPrefs.getBoolean("On"+context, false);
-//            Boolean a = FAVtoggleButton.isChecked();
+
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
                 FAVtoggleButton.setChecked(true);
@@ -142,8 +144,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_grey));
                 FAVtoggleButton.setChecked(false);
             }
-//        FAVtoggleButton.setChecked(favPrefs.getBoolean("Off", false));
-//        FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.star_grey));
+
             FAVtoggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {

@@ -35,6 +35,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete_oneitem_dialog_msg">Are you sure to remove this movie from favourites?</string>
     <string name="delete_one_item">Movie removed from favourites</string>
+    <string name="item_list_refreshed">Movies refreshed</string>
 
 
 </resources>

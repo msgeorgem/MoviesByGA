@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -44,7 +46,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private RecyclerView moviesRecyclerView;
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     private TextView mEmptyStateTextView;
-
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public IMDBOnlineFragment() {
         // Required empty public constructor
@@ -57,24 +59,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         view = inflater.inflate(R.layout.fragment_movies, container, false);
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
-        NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
-
-        if (networkInfo != null && networkInfo.isConnected()) {
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(MOVIES_LOADER_ID, null, this);
-        } else {
-            mEmptyStateTextView = view.findViewById(R.id.empty_view);
-            mEmptyStateTextView.setText(R.string.no_internet);
-            // Otherwise, display error
-            // First, hide loading indicator so error message will be visible
-            View loadingIndicator = view.findViewById(R.id.loading_indicator);
-            loadingIndicator.setVisibility(View.GONE);
-            // Set empty state text to display "No internet connection"
-        }
+        loadingScheme();
         // Find a reference to the {@link ListView} in the layout
         moviesRecyclerView = view.findViewById(R.id.list_item);
 
@@ -93,7 +78,49 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                refreshItems();
+            }
+        });
         return view;
+    }
+
+    void refreshItems() {
+        // Load items
+        loadingScheme();
+        // Load complete
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+        // Update the adapter and notify data set changed
+        Toast.makeText(getActivity(), getString(R.string.item_list_refreshed), Toast.LENGTH_SHORT).show();
+        // Stop refresh animation
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    void loadingScheme() {
+        NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Get a reference to the LoaderManager, in order to interact with loaders.
+            LoaderManager loaderManager = getLoaderManager();
+            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+            // because this activity implements the LoaderCallbacks interface).
+            loaderManager.initLoader(MOVIES_LOADER_ID, null, this);
+        } else {
+            mEmptyStateTextView = view.findViewById(R.id.empty_view);
+            mEmptyStateTextView.setText(R.string.no_internet);
+            // Otherwise, display error
+            // First, hide loading indicator so error message will be visible
+            View loadingIndicator = view.findViewById(R.id.loading_indicator);
+            loadingIndicator.setVisibility(View.GONE);
+            // Set empty state text to display "No internet connection"
+        }
     }
 
     @Override
@@ -110,6 +137,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         if (state != null) {
             moviesRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
+
     }
 
     @Override
