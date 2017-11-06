@@ -16,7 +16,6 @@
 
     <string-array name="fav_settings_order_by_labels">
 
-        <item>@string/fav_settings_order_by_title_label</item>
         <item>@string/fav_settings_order_by_vote_label</item>
         <item>@string/fav_settings_order_by_release_label</item>
         <item>@string/fav_settings_order_by_recent_label</item>
@@ -25,7 +24,6 @@
 
     <string-array name="fav_settings_order_by_values">
 
-        <item>@string/fav_settings_order_by_title_value</item>
         <item>@string/fav_settings_order_by_vote_value</item>
         <item>@string/fav_settings_order_by_release_value</item>
         <item>@string/fav_settings_order_by_recent_value</item>

@@ -13,12 +13,10 @@
     <string name="imdb_settings_order_by_label">IMDB order by</string>
     <string name="imdb_settings_order_by_key">order</string>
 
-    <string name="fav_settings_order_by_title_label" translatable="true">Title</string>
     <string name="fav_settings_order_by_vote_label" translatable="true">Vote</string>
     <string name="fav_settings_order_by_release_label" translatable="true">Release date</string>
     <string name="fav_settings_order_by_recent_label" translatable="true">Recently added</string>
 
-    <string name="fav_settings_order_by_title_value">title</string>
     <string name="fav_settings_order_by_vote_value">vote</string>
     <string name="fav_settings_order_by_release_value">release_date</string>
     <string name="fav_settings_order_by_recent_value">_id</string>
