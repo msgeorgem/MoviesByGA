@@ -3,11 +3,13 @@ package com.example.android.moviesbyg.Favourites;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -65,7 +67,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     };
 
     //   Just a rough idea how to sort in query
-    private static final String SORT_ORDER = FavouritesContract.FavouritesEntry._ID + " DESC";
+    private static final String SORT_ORDER_ID = FavouritesContract.FavouritesEntry._ID + " DESC";
     private static final String BUNDLE_RECYCLER_LAYOUT = "FavouritesFragment.moviesRecyclerView";
     public FavouritesCursorAdapter mFavsAdapter;
     Parcelable state;
@@ -110,7 +112,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     }
 
     public Cursor querY() {
-        return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, null, null, null, SORT_ORDER);
+        return getActivity().getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, null, null, null, SORT_ORDER_ID);
     }
 
     void deleteOneItem(long id) {
@@ -174,6 +176,17 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        String COLUMN = sharedPrefs.getString(
+                getString(R.string.fav_settings_order_by_key),
+                getString(R.string.fav_settings_order_by_label)
+
+        );
+
+        String SORT_ORDER = COLUMN + " DESC";
+
         // Perform a query using CursorLoader
         return new CursorLoader(getActivity(),    // Parent activity context
                 FavouritesContract.FavouritesEntry.CONTENT_URI, // Provider content URI to query

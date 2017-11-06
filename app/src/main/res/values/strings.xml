@@ -2,16 +2,32 @@
     <string name="app_name">MoviesByGA</string>
     <string name="title_activity_settings">Settings</string>
 
-    <string name="settings_order_by_popularity_label" translatable="true">Popularity</string>
-    <string name="settings_order_by_vote_label" translatable="true">Vote</string>
+    <string name="imdb_settings_order_by_popularity_label" translatable="true">Popularity</string>
+    <string name="imdb_settings_order_by_vote_label" translatable="true">Vote</string>
 
-    <string name="settings_order_by_popularity_value">popularity.desc</string>
-    <string name="settings_order_by_vote_value">vote_average.desc</string>
+    <string name="imdb_settings_order_by_popularity_value">popularity.desc</string>
+    <string name="imdb_settings_order_by_vote_value">vote_average.desc</string>
 
     <!-- Default order for order preference -->
-    <string name="settings_order_by_default" translatable="false">popularity.desc</string>
-    <string name="settings_order_by_label">Order By</string>
-    <string name="settings_order_by_key">order</string>
+    <string name="imdb_settings_order_by_default" translatable="false">popularity.desc</string>
+    <string name="imdb_settings_order_by_label">IMDB order by</string>
+    <string name="imdb_settings_order_by_key">order</string>
+
+    <string name="fav_settings_order_by_title_label" translatable="true">Title</string>
+    <string name="fav_settings_order_by_vote_label" translatable="true">Vote</string>
+    <string name="fav_settings_order_by_release_label" translatable="true">Release date</string>
+    <string name="fav_settings_order_by_recent_label" translatable="true">Recently added</string>
+
+    <string name="fav_settings_order_by_title_value">title</string>
+    <string name="fav_settings_order_by_vote_value">vote</string>
+    <string name="fav_settings_order_by_release_value">release_date</string>
+    <string name="fav_settings_order_by_recent_value">_id</string>
+
+    <!-- Default order for order preference -->
+    <string name="fav_settings_order_by_default" translatable="false">_id</string>
+    <string name="fav_settings_order_by_label">FAV order by</string>
+    <string name="fav_settings_order_by_key">_id</string>
+
 
     <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
     <string name="action_settings">Settings</string>

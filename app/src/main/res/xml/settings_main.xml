@@ -3,9 +3,18 @@
     android:title="@string/title_activity_settings">
 
     <ListPreference
-        android:defaultValue="@string/settings_order_by_default"
-        android:entries="@array/settings_order_by_labels"
-        android:entryValues="@array/settings_order_by_values"
-        android:key="@string/settings_order_by_key"
-        android:title="@string/settings_order_by_label" />
+        android:defaultValue="@string/imdb_settings_order_by_default"
+        android:entries="@array/imdb_settings_order_by_labels"
+        android:entryValues="@array/imdb_settings_order_by_values"
+        android:key="@string/imdb_settings_order_by_key"
+        android:title="@string/imdb_settings_order_by_label" />
+
+
+    <ListPreference
+        android:defaultValue="@string/fav_settings_order_by_default"
+        android:entries="@array/fav_settings_order_by_labels"
+        android:entryValues="@array/fav_settings_order_by_values"
+        android:key="@string/fav_settings_order_by_key"
+        android:title="@string/fav_settings_order_by_label" />
+
 </PreferenceScreen>

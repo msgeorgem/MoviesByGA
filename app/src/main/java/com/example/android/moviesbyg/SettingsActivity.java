@@ -30,8 +30,11 @@ public class SettingsActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings_main);
 
-            Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
-            bindPreferenceSummaryToValue(orderBy);
+            Preference imdbOrderBy = findPreference(getString(R.string.imdb_settings_order_by_key));
+            bindPreferenceSummaryToValue1(imdbOrderBy);
+
+            Preference favOrderBy = findPreference(getString(R.string.fav_settings_order_by_key));
+            bindPreferenceSummaryToValue2(favOrderBy);
         }
 
         @Override
@@ -50,7 +53,14 @@ public class SettingsActivity extends AppCompatActivity {
             return true;
         }
 
-        private void bindPreferenceSummaryToValue(Preference preference) {
+        private void bindPreferenceSummaryToValue1(Preference preference) {
+            preference.setOnPreferenceChangeListener(this);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+            String preferenceString = preferences.getString(preference.getKey(), "");
+            onPreferenceChange(preference, preferenceString);
+        }
+
+        private void bindPreferenceSummaryToValue2(Preference preference) {
             preference.setOnPreferenceChangeListener(this);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
             String preferenceString = preferences.getString(preference.getKey(), "");
