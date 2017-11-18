@@ -24,7 +24,7 @@
     <!-- Default order for order preference -->
     <string name="fav_settings_order_by_default" translatable="false">_id</string>
     <string name="fav_settings_order_by_key">_id</string>
-    <string name="fav_settings_order_by_label">Fovourites order by</string>
+    <string name="fav_settings_order_by_label">Favourites order by</string>
 
 
     <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
