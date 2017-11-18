@@ -249,19 +249,19 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         Cursor cur = getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
 
         ArrayList<String> favsTempList = new ArrayList<>();
-        boolean favourite = false;
+        boolean favourite;
         if (cur != null) {
             while (cur.moveToNext()) {
                 String i = cur.getString(cur.getColumnIndex(COLUMN_MOVIE_ID));
                 favsTempList.add(i);
             }
         }
-
-        for (int i = 0; i < favsTempList.size(); i++) {
-            if (favsTempList.get(i).equals(movieId)) {
-                favourite = true;
-            }
-        }
+        favourite = favsTempList.contains(movieId);
+//        for (int i = 0; i < favsTempList.size(); i++) {
+//            if (favsTempList.get(i).equals(movieId)) {
+//                favourite = true;
+//            }
+//        }
         if (cur != null) {
             cur.close();
         }

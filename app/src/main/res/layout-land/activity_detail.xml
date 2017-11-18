@@ -80,9 +80,9 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="7dp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toRightOf="@+id/part1"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/part2" />
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="@+id/horizontal_middle"
+                    app:layout_constraintTop_toBottomOf="@+id/part1" />
 
                 <include
                     android:id="@+id/part4"
@@ -93,7 +93,7 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/part1" />
+                    app:layout_constraintTop_toBottomOf="@+id/part2" />
 
                 <include
                     android:id="@+id/part5"
@@ -102,9 +102,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/horizontal_middle"
-                    app:layout_constraintTop_toBottomOf="@+id/part1" />
+                    app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/part4" />
 
             </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>

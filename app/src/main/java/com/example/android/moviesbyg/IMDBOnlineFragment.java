@@ -150,17 +150,18 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         Log.i(LOG_TAG, "onCreateLoader");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        String order = sharedPrefs.getString(
+        String orderr = sharedPrefs.getString(
                 getString(R.string.imdb_settings_order_by_key),
                 getString(R.string.imdb_settings_order_by_label)
         );
 
         Uri baseUri = Uri.parse(QUERY_BASE_URL);
+
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter(API_KEY, api_key);
-        uriBuilder.appendQueryParameter(SORT_BY, order);
-
+        uriBuilder.appendQueryParameter(SORT_BY, orderr);
+        Log.i(LOG_TAG, uriBuilder.toString());
         return new MoviesLoader(getActivity(), uriBuilder.toString());
     }
 
