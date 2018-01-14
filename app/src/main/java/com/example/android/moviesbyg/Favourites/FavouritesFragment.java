@@ -118,7 +118,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
     void deleteOneItem(long id) {
         int rowDeleted = getActivity().getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry._ID + "=" + id, null);
         Toast.makeText(getActivity(), rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
-//        mFavsAdapter.swapCursor(querY());
+
     }
 
     public void showDeleteConfirmationDialogOneItem(final RecyclerView.ViewHolder viewHolder) {
@@ -181,7 +181,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
         String COLUMN = sharedPrefs.getString(
                 getString(R.string.fav_settings_order_by_key),
-                getString(R.string.fav_settings_order_by_label)
+                getString(R.string.fav_settings_order_by_recent_value)
 
         );
 

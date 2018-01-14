@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -52,33 +51,21 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     public static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String BUNDLE_RECYCLER_LAYOUT = "DetailActivity.clipsRecyclerView.activity_detail";
-    private static final int CLIPS_LOADER_ID = 222;
-    private static final int REVIEWS_LOADER_ID = 333;
-    /**
-     * Identifier for the item data loader
-     */
-    private static final int SELECTED_MOVIE_LOADER = 111;
     private static final String[] PROJECTION = {
             FavouritesContract.FavouritesEntry._ID,
             FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
     };
     public static String MDB_CURRENT_MOVIE_ID;
-    public static ConnectivityManager cm;
     public static SharedPreferences favPrefs;
-    private static String movieIdFav;
     private final String MDB_SHARE_HASHTAG = "IMDB Source";
-    Parcelable state;
     private String mMovieSummary;
 
     private Context context;
-    private Cursor cursor;
     private ClipsFragment mClipsFragment;
     private ReviewsFragment mReviewsFragment;
     private ToggleButton FAVtoggleButton;
     private String currentTitle, currentReleaseDate, currentVote, currentOverview, currentPoster;
-    private String dBtitle, dBrelease, dBvote, dBoverview, dBposter;
-    private int id, currentId;
-    private long currentMovieId, justDeletedMovieId;
+    private long currentMovieId;
     private String movieId;
     private Uri mCurrentItemUri;
     private ActivityDetailBinding mDetailBinding;
@@ -89,7 +76,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
         // Find the toolbar view inside the activity layout
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);

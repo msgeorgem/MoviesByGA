@@ -10,8 +10,8 @@
 
     <!-- Default order for order preference -->
     <string name="imdb_settings_order_by_default" translatable="false">popularity.desc</string>
-    <string name="imdb_settings_order_by_label">IMDB order by</string>
     <string name="imdb_settings_order_by_key">order</string>
+    <string name="imdb_settings_order_by_label">IMDB Order By</string>
 
     <string name="fav_settings_order_by_vote_label" translatable="true">Vote</string>
     <string name="fav_settings_order_by_release_label" translatable="true">Release date</string>
@@ -24,8 +24,7 @@
     <!-- Default order for order preference -->
     <string name="fav_settings_order_by_default" translatable="false">_id</string>
     <string name="fav_settings_order_by_key">_id</string>
-    <string name="fav_settings_order_by_label">Favourites order by</string>
-
+    <string name="fav_settings_order_by_label">Favourites Order By</string>
 
     <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
     <string name="action_settings">Settings</string>
