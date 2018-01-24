@@ -108,6 +108,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         mloadingIndicator = view.findViewById(R.id.loading_indicator_favs);
         //kick off the loader
         getLoaderManager().initLoader(FAV_LOADER, null, this);
+
         return view;
     }
 

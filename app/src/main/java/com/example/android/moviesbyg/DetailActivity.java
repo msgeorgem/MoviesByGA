@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.NavUtils;
@@ -85,6 +86,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
+        favPrefs = getSharedPreferences("", Context.MODE_PRIVATE);
 
         if (mCurrentItemUri == null) {
             currentTitle = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
@@ -344,9 +346,12 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 .setType("text/plain")
                 .setText(mMovieSummary + MDB_SHARE_HASHTAG)
                 .getIntent();
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        }
         return shareIntent;
     }
+
 
 //    @Override
 //    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
