@@ -17,6 +17,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <!--The manifest entry for our DetailActivity. Each Activity requires a manifest entry-->

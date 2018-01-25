@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.bumptech.glide.Glide;
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
 import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.R;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Marcin on 2017-10-28.
@@ -60,7 +60,14 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
         String itemPicture = cursor.getString(posterColumnIndex);
 
         final Context context = viewHolder.itemView.getContext();
-        Picasso.with(context).load(itemPicture).into(viewHolder.posterImageView);
+//        Picasso.with(context).load(itemPicture).into(viewHolder.posterImageView);
+
+        Glide.with(context)
+                .load(itemPicture)
+                .fitCenter()
+                .crossFade()
+                .thumbnail(0.1f)
+                .into(viewHolder.posterImageView);
 
         viewHolder.titleTextView.setText(itemTitle);
         viewHolder.overviewTextView.setText(itemOverview);

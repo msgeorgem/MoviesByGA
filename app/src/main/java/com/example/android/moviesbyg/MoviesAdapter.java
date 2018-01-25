@@ -61,6 +61,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         Context context = viewHolder.itemView.getContext();
         Picasso.with(context).load(viewHolder.imageURL).fit().into(viewHolder.imageView);
 
+//        Glide.with(context)
+//                .load(viewHolder.imageURL)
+//                .fitCenter()
+//                .crossFade()
+//                .into(viewHolder.imageView);
+
         viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override

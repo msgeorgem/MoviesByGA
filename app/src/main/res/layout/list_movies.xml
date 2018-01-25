@@ -12,5 +12,5 @@
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/sample_image02" />
+        android:focusable="auto" />
 </LinearLayout>

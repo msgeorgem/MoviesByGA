@@ -40,13 +40,15 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private static final String SORT_BY = "sort_by";
     private static final String BUNDLE_RECYCLER_LAYOUT = "IMDBOnlineFragment.moviesRecyclerView";
     private static final int MOVIES_LOADER_ID = 1;
-    public MoviesAdapter mAdapter;
-    Parcelable state;
+    public static MoviesAdapter mAdapter;
+    SharedPreferences sharedPrefs;
+    private Parcelable state;
     private View view;
     private RecyclerView moviesRecyclerView;
     private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     private TextView mEmptyStateTextView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Loader loader;
 
     public IMDBOnlineFragment() {
         // Required empty public constructor
@@ -57,6 +59,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_movies, container, false);
+
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         loadingScheme();
@@ -106,6 +109,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     void loadingScheme() {
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+            sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             // Get a reference to the LoaderManager, in order to interact with loaders.
             LoaderManager loaderManager = getLoaderManager();
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
@@ -143,12 +147,13 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onStop() {
         super.onStop();
+        // save RecyclerView state
+        state = moviesRecyclerView.getLayoutManager().onSaveInstanceState();
     }
 
     @Override
     public Loader<ArrayList<SingleMovie>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader");
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         String orderr = sharedPrefs.getString(
                 getString(R.string.imdb_settings_order_by_key),
@@ -162,6 +167,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         uriBuilder.appendQueryParameter(API_KEY, api_key);
         uriBuilder.appendQueryParameter(SORT_BY, orderr);
         Log.i(LOG_TAG, uriBuilder.toString());
+
         return new MoviesLoader(getActivity(), uriBuilder.toString());
     }
 

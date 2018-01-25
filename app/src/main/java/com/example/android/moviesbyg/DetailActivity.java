@@ -24,6 +24,7 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.bumptech.glide.Glide;
 import com.example.android.moviesbyg.DataFavs.FavouritesContract;
 import com.example.android.moviesbyg.Favourites.FavouritesFragment;
 import com.example.android.moviesbyg.MovieClips.ClipsFragment;
@@ -88,6 +89,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         mCurrentItemUri = intent.getData();
         favPrefs = getSharedPreferences("", Context.MODE_PRIVATE);
 
+
         if (mCurrentItemUri == null) {
             currentTitle = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
             mDetailBinding.part2.title.setText(currentTitle);
@@ -103,7 +105,14 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
 
             currentPoster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
             context = mDetailBinding.part1.poster.getContext();
-            Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
+//            Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
+
+            Glide.with(context)
+                    .load(currentPoster)
+                    .fitCenter()
+                    .thumbnail(0.1f)
+                    .crossFade()
+                    .into(mDetailBinding.part1.poster);
 
             MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
