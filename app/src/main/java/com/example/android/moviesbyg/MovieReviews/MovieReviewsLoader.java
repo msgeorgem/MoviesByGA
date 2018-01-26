@@ -16,7 +16,7 @@ public class MovieReviewsLoader extends AsyncTaskLoader<ArrayList<SingleMovieRev
      * Tag for log messages
      */
     private static final String LOG_TAG = MovieReviewsLoader.class.getName();
-
+    private ArrayList<SingleMovieReview> mData;
     /**
      * Query URL
      */
@@ -36,7 +36,13 @@ public class MovieReviewsLoader extends AsyncTaskLoader<ArrayList<SingleMovieRev
     @Override
     protected void onStartLoading() {
         Log.i(LOG_TAG, "onStartLoading");
-        forceLoad();
+        if (mData != null) {
+            // Use cached data
+            deliverResult(mData);
+        } else {
+            // We have no data, so kick off loading it
+            forceLoad();
+        }
     }
 
     /**
@@ -50,6 +56,16 @@ public class MovieReviewsLoader extends AsyncTaskLoader<ArrayList<SingleMovieRev
         Log.i(LOG_TAG, "loadInBackground");
         // Perform the network request, parse the response, and extract a list of news.
         ArrayList<SingleMovieReview> singleMovieReview = QueryReviewsUtils.fetchReviesData(mUrl);
+        isLoadInBackgroundCanceled();
         return singleMovieReview;
+    }
+
+    @Override
+    public void deliverResult(ArrayList<SingleMovieReview> data) {
+        // We’ll save the data for later retrieval
+        mData = data;
+        // We can do any pre-processing we want here
+        // Just remember this is on the UI thread so nothing lengthy!
+        super.deliverResult(data);
     }
 }

@@ -14,7 +14,7 @@ public class MoviesLoader extends AsyncTaskLoader<ArrayList<SingleMovie>> {
 
     /** Tag for log messages */
     private static final String LOG_TAG = MoviesLoader.class.getName();
-
+    private ArrayList<SingleMovie> mData;
     /** Query URL */
     private String mUrl;
 
@@ -32,7 +32,13 @@ public class MoviesLoader extends AsyncTaskLoader<ArrayList<SingleMovie>> {
     @Override
     protected void onStartLoading() {
         Log.i(LOG_TAG,"onStartLoading");
-        forceLoad();
+        if (mData != null) {
+            // Use cached data
+            deliverResult(mData);
+        } else {
+            // We have no data, so kick off loading it
+            forceLoad();
+        }
     }
 
     /**
@@ -46,6 +52,16 @@ public class MoviesLoader extends AsyncTaskLoader<ArrayList<SingleMovie>> {
         Log.i(LOG_TAG,"loadInBackground");
         // Perform the network request, parse the response, and extract a list of news.
         ArrayList<SingleMovie> singleNews = QueryUtils.fetchMoviesData(mUrl);
+        isLoadInBackgroundCanceled();
         return singleNews;
+    }
+
+    @Override
+    public void deliverResult(ArrayList<SingleMovie> data) {
+        // We’ll save the data for later retrieval
+        mData = data;
+        // We can do any pre-processing we want here
+        // Just remember this is on the UI thread so nothing lengthy!
+        super.deliverResult(data);
     }
 }
