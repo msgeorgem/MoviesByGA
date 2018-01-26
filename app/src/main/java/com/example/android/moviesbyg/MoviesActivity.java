@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.ToxicBakery.viewpager.transforms.DefaultTransformer;
+
 public class MoviesActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MoviesActivity.class.getName();
@@ -22,8 +24,10 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
 
         // Find the view pager that will allow the user to swipe between fragments
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-
+        final ViewPager viewPager = findViewById(R.id.viewpager);
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener());
+        //viewPager.setOffscreenPageLimit(3);
+        viewPager.setPageTransformer(true, new DefaultTransformer());
         // Create an adapter that knows which fragment should be shown on each page
         CategoryAdapter adapter = new CategoryAdapter(this, getSupportFragmentManager());
 
@@ -31,7 +35,7 @@ public class MoviesActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
 
         // Find the tab layout that shows the tabs
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        final TabLayout tabLayout = findViewById(R.id.tabs);
 
         // Connect the tab layout with the view pager. This will
         //   1. Update the tab layout when the view pager is swiped
@@ -47,7 +51,7 @@ public class MoviesActivity extends AppCompatActivity {
         });
 
         // Find the toolbar view inside the activity layout
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);

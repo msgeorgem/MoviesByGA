@@ -1,5 +1,6 @@
 package com.example.android.moviesbyg;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -8,6 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +28,7 @@ import java.util.ArrayList;
 
 public class QueryUtils {
     public static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    public static final String LOG_TAG1 = "JSON";
     public static final String MDB_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
     public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
@@ -45,6 +51,7 @@ public class QueryUtils {
     private static final String MDB_POSTER = "poster_path";
     private static final String MDB_ID = "id";
     private static final String MDB_BACKDROP_PATH = "backdrop_path";
+    static File cacheFile;
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
      * This class is only meant to hold static variables and methods, which can be accessed
@@ -52,8 +59,6 @@ public class QueryUtils {
      */
     private QueryUtils() {
     }
-
-
 
     /**
      * Query the USGS dataset and return an {@link ArrayList <SingleMovie>} object to represent a single news.
@@ -73,6 +78,10 @@ public class QueryUtils {
         String jsonResponse = null;
         try {
             jsonResponse = makeHttpRequest(url);
+            createCacheFile(IMDBOnlineFragment.context, "moviesIMDB.json", jsonResponse);
+            String temp = readFile(cacheFile);
+            Log.i(LOG_TAG1, temp);
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
@@ -81,7 +90,6 @@ public class QueryUtils {
 
         // Return the {@link Event}
         return singleMovie;
-
 
     }
 
@@ -136,6 +144,7 @@ public class QueryUtils {
                 inputStream.close();
             }
         }
+
         return jsonResponse;
     }
 
@@ -161,7 +170,7 @@ public class QueryUtils {
      * Return a list of {@link SingleMovie} objects that has been built up from
      * parsing a JSON response.
      */
-    public static ArrayList<SingleMovie> extractMovies(String singleMovieJSON) {
+    private static ArrayList<SingleMovie> extractMovies(String singleMovieJSON) {
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(singleMovieJSON)) {
             return null;
@@ -205,6 +214,43 @@ public class QueryUtils {
 
         // Return the list of news
         return singleMovie;
+    }
+
+    private static File createCacheFile(Context context, String fileName, String json) {
+        cacheFile = new File(context.getFilesDir(), fileName);
+        try {
+            FileWriter fw = new FileWriter(cacheFile);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(json);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            // on exception null will be returned
+            cacheFile = null;
+        }
+
+        return cacheFile;
+    }
+
+    public static String readFile(File file) {
+        String fileContent = "";
+        try {
+            String currentLine;
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            while ((currentLine = br.readLine()) != null) {
+                fileContent += currentLine + '\n';
+            }
+
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            // on exception null will be returned
+            fileContent = null;
+        }
+        return fileContent;
     }
 
 }

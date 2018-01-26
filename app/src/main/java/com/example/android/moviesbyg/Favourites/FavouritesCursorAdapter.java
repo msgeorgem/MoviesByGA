@@ -60,7 +60,7 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
         String itemPicture = cursor.getString(posterColumnIndex);
 
         final Context context = viewHolder.itemView.getContext();
-//        Picasso.with(context).load(itemPicture).into(viewHolder.posterImageView);
+//        Picasso.with(context).load(itemPicture).resizeDimen(60, 120).into(viewHolder.posterImageView);
 
         Glide.with(context)
                 .load(itemPicture)

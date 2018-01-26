@@ -1,6 +1,7 @@
 package com.example.android.moviesbyg;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.NetworkInfo;
@@ -20,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,6 +41,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private static final String BUNDLE_RECYCLER_LAYOUT = "IMDBOnlineFragment.moviesRecyclerView";
     private static final int MOVIES_LOADER_ID = 1;
     public static MoviesAdapter mAdapter;
+    public static Context context;
     SharedPreferences sharedPrefs;
     private Parcelable state;
     private View view;
@@ -59,7 +60,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_movies, container, false);
-
+        context = getActivity();
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         loadingScheme();
@@ -67,9 +68,9 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView = view.findViewById(R.id.list_item);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            moviesRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
         } else {
-            moviesRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(context, 4));
         }
 
         mAdapter = new MoviesAdapter(movieGrid);
@@ -81,30 +82,30 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Refresh items
-                refreshItems();
-            }
-        });
+//DefaultItemAnimator        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                // Refresh items
+//                refreshItems();
+//            }
+//        });
         return view;
     }
 
-    void refreshItems() {
-        // Load items
-        loadingScheme();
-        // Load complete
-        onItemsLoadComplete();
-    }
-
-    void onItemsLoadComplete() {
-        // Update the adapter and notify data set changed
-        Toast.makeText(getActivity(), getString(R.string.item_list_refreshed), Toast.LENGTH_SHORT).show();
-        // Stop refresh animation
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
+//    void refreshItems() {
+//        // Load items
+//        loadingScheme();
+//        // Load complete
+//        onItemsLoadComplete();
+//    }
+//
+//    void onItemsLoadComplete() {
+//        // Update the adapter and notify data set changed
+//        Toast.makeText(getActivity(), getString(R.string.item_list_refreshed), Toast.LENGTH_SHORT).show();
+//        // Stop refresh animation
+//        mSwipeRefreshLayout.setRefreshing(false);
+//    }
 
     void loadingScheme() {
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
@@ -168,7 +169,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         uriBuilder.appendQueryParameter(SORT_BY, orderr);
         Log.i(LOG_TAG, uriBuilder.toString());
 
-        return new MoviesLoader(getActivity(), uriBuilder.toString());
+        return new MoviesLoader(context, uriBuilder.toString());
     }
 
 
