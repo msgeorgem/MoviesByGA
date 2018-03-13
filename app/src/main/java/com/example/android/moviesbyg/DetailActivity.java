@@ -52,11 +52,11 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
 
     public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     public static final String LOG_TAG = DetailActivity.class.getSimpleName();
-    private static final String BUNDLE_RECYCLER_LAYOUT = "DetailActivity.clipsRecyclerView.activity_detail";
-    private static final String[] PROJECTION = {
+    public static final String[] PROJECTION = {
             FavouritesContract.FavouritesEntry._ID,
             FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID,
     };
+    private static final String BUNDLE_RECYCLER_LAYOUT = "DetailActivity.clipsRecyclerView.activity_detail";
     public static String MDB_CURRENT_MOVIE_ID;
     public static SharedPreferences favPrefs;
     private final String MDB_SHARE_HASHTAG = "IMDB Source";
@@ -91,19 +91,19 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
 
 
         if (mCurrentItemUri == null) {
-            currentTitle = getIntent().getStringExtra(MoviesAdapter.EXTRA_TITLE);
+            currentTitle = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_TITLE);
             mDetailBinding.part2.title.setText(currentTitle);
 
-            currentReleaseDate = getIntent().getStringExtra(MoviesAdapter.EXTRA_RELEASE_DATE);
+            currentReleaseDate = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_RELEASE_DATE);
             mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
 
-            currentVote = getIntent().getStringExtra(MoviesAdapter.EXTRA_VOTE);
+            currentVote = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_VOTE);
             mDetailBinding.part2.rating.setText(currentVote);
 
-            currentOverview = getIntent().getStringExtra(MoviesAdapter.EXTRA_OVERVIEW);
+            currentOverview = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_OVERVIEW);
             mDetailBinding.part3.overview2.setText(currentOverview);
 
-            currentPoster = getIntent().getStringExtra(MoviesAdapter.EXTRA_POSTER);
+            currentPoster = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_POSTER);
             context = mDetailBinding.part1.poster.getContext();
 //            Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
 
@@ -114,13 +114,13 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                     .crossFade()
                     .into(mDetailBinding.part1.poster);
 
-            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(MoviesAdapter.EXTRA_ID);
+            MDB_CURRENT_MOVIE_ID = getIntent().getStringExtra(IMDBOnlineFragment.EXTRA_ID);
             movieId = MDB_CURRENT_MOVIE_ID;
             currentMovieId = Long.parseLong(movieId);
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(false);
 
-            Boolean a = checkIfInFavorites();
+            Boolean a = checkIfInFavorites(movieId);
 
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
@@ -171,27 +171,15 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             context = mDetailBinding.part1.poster.getContext();
             Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
 
-//            if (mCurrentItemUri == null) {
-//
-//                mDetailBinding.part2.title.setText(currentTitle);
-//                mDetailBinding.part2.releaseDate.setText(currentReleaseDate);
-//                mDetailBinding.part2.rating.setText(currentVote);
-//                mDetailBinding.part3.overview2.setText(currentOverview);
-//                context = mDetailBinding.part1.poster.getContext();
-//                Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
-////
-//            } else {
-//                getSupportLoaderManager().initLoader(SELECTED_MOVIE_LOADER, null, this);
-                currentMovieId = Long.parseLong(movieId);
-//                Long tempMovieId = checkIfDeleted(currentMovieId);
-//                currentMovieId = tempMovieId;
-//            }
+
+            currentMovieId = Long.parseLong(movieId);
+
             context = mDetailBinding.part2.favDetToggleButton.getContext();
             FAVtoggleButton = mDetailBinding.part2.favDetToggleButton;
             FAVtoggleButton.setChecked(true);
             // wrong favPrefs = context.getSharedPreferences("favourites", Context.MODE_PRIVATE);
             // Boolean aa = DetailActivity.favPrefs.getBoolean("On"+context, false);
-            Boolean a = checkIfInFavorites();
+            Boolean a = checkIfInFavorites(movieId);
 //            Boolean a = true;
             if (a) {
                 FAVtoggleButton.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.star_yellow));
@@ -243,7 +231,7 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         Log.i(LOG_TAG, "initClipsLoader");
     }
 
-    private boolean checkIfInFavorites() {
+    private boolean checkIfInFavorites(String movieID) {
         Cursor cur = getContentResolver().query(FavouritesContract.FavouritesEntry.CONTENT_URI, PROJECTION, null, null, null);
 
         ArrayList<String> favsTempList = new ArrayList<>();
@@ -254,31 +242,19 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
                 favsTempList.add(i);
             }
         }
-        favourite = favsTempList.contains(movieId);
-//        for (int i = 0; i < favsTempList.size(); i++) {
-//            if (favsTempList.get(i).equals(movieId)) {
-//                favourite = true;
-//            }
-//        }
+        favourite = favsTempList.contains(movieID);
+
         if (cur != null) {
             cur.close();
         }
         return favourite;
     }
 
+
     public void delete(long id) {
         int rowDeleted = getContentResolver().delete(FavouritesContract.FavouritesEntry.CONTENT_URI, FavouritesContract.FavouritesEntry.COLUMN_MOVIE_ID + "=" + id, null);
         Toast.makeText(this, rowDeleted + " " + getString(R.string.delete_one_item), Toast.LENGTH_SHORT).show();
     }
-
-//    private long checkIfDeleted(Long movieId){
-//        long tempId = 0;
-//        if(!(movieId == null) || !(movieId == 0)){
-//            Log.i(LOG_TAG, "not null or zero");
-//            tempId = movieId;
-//        } else tempId = justDeletedMovieId;
-//        return tempId;
-//    };
 
     // Get user input from editor and save item into database.
     private void saveItem() throws IOException {
@@ -361,73 +337,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
         return shareIntent;
     }
 
-
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//        // Since the editor shows all item attributes, define a PROJECTION that contains
-//        // all columns from the items table
-//        String[] projection = {
-//                FavouritesContract.FavouritesEntry._ID,
-//                COLUMN_MOVIE_ID,
-//                COLUMN_TILE,
-//                COLUMN_RELEASE_DATE,
-//                COLUMN_VOTE,
-//                COLUMN_OVERVIEW,
-//                COLUMN_POSTER};
-//
-//        // This loader will execute the ContentProvider's query method on a background thread
-//        return new CursorLoader(this,   // Parent activity context
-//                mCurrentItemUri,         // Query the content URI for the current item
-//                projection,             // Columns to include in the resulting Cursor
-//                null,                   // No selection clause
-//                null,                   // No selection arguments
-//                null);                  // Default sort order
-//    }
-//
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//        // Bail early if the cursor is null or there is less than 1 row in the cursor
-//        if (cursor == null || cursor.getCount() < 1) {
-//            return;
-//        }
-//
-//        // Proceed with moving to the first row of the cursor and reading data from it
-//        // (This should be the only row in the cursor)
-//        if (cursor.moveToFirst()) {
-//            // Find the columns of item attributes that we're interested in
-//            id = cursor.getInt(cursor.getColumnIndex(FavouritesContract.FavouritesEntry._ID));
-//            int movieColumnIndex = cursor.getColumnIndex(COLUMN_MOVIE_ID);
-//            int titleColumnIndex = cursor.getColumnIndex(COLUMN_TILE);
-//            int releaseColumnIndex = cursor.getColumnIndex(COLUMN_RELEASE_DATE);
-//            int voteColumnIndex = cursor.getColumnIndex(COLUMN_VOTE);
-//            int overviewColumnIndex = cursor.getColumnIndex(COLUMN_OVERVIEW);
-//            int posterColumnIndex = cursor.getColumnIndex(COLUMN_POSTER);
-//
-//            // Extract out the value from the Cursor for the given column index
-//            movieIdFav = cursor.getString(movieColumnIndex);
-//            dBtitle = cursor.getString(titleColumnIndex);
-//            dBrelease = cursor.getString(releaseColumnIndex);
-//            dBvote = cursor.getString(voteColumnIndex);
-//            dBoverview = cursor.getString(overviewColumnIndex);
-//            dBposter = cursor.getString(posterColumnIndex);
-//
-//            final Context context = mDetailBinding.part1.poster.getContext();
-//            Picasso.with(context).load(dBposter).into(mDetailBinding.part1.poster);
-//
-//            // Update the views on the screen with the values from the database
-//            mDetailBinding.part2.title.setText(dBtitle);
-//            mDetailBinding.part2.releaseDate.setText(dBrelease);
-//            mDetailBinding.part2.rating.setText(dBvote);
-//            mDetailBinding.part3.overview2.setText(dBoverview);
-//
-//        }
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<Cursor> loader) {
-//        Log.i(LOG_TAG, "onLoaderReset");
-//
-//    }
 
     @Override
     public void onStop() {

@@ -18,6 +18,7 @@ public class MoviesActivity extends AppCompatActivity {
     public static final String LOG_TAG = MoviesActivity.class.getName();
     public static ConnectivityManager cm;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +59,7 @@ public class MoviesActivity extends AppCompatActivity {
 
         cm = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
+
     }
 
     @Override

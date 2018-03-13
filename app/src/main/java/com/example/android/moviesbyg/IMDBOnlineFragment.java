@@ -2,6 +2,7 @@ package com.example.android.moviesbyg;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.NetworkInfo;
@@ -30,26 +31,39 @@ import java.util.ArrayList;
 
 public class IMDBOnlineFragment extends Fragment implements LoaderManager.LoaderCallbacks<ArrayList<SingleMovie>> {
 
+    public static final String EXTRA_TITLE = "EXTRA_TITLE";
+    public static final String EXTRA_OVERVIEW = "EXTRA_OVERVIEW";
+    public static final String EXTRA_RELEASE_DATE = "EXTRA_RELEASE_DATE";
+    public static final String EXTRA_VOTE = "EXTRA_VOTE";
+    public static final String EXTRA_ID = "EXTRA_ID";
+    public static final String EXTRA_POSTER = "EXTRA_POSTER";
+
     public static final String LOG_TAG = IMDBOnlineFragment.class.getName();
     private static final String URL =
             "https://api.themoviedb.org/3/discover/movie?";
     private static final String QUERY_BASE_URL = URL;
     /* API_KEY gained from themoviedb.org */
+    private static final String api_key = BuildConfig.API_KEY;
     private static final String API_KEY = "api_key";
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+
     private static final String SORT_BY = "sort_by";
     private static final String BUNDLE_RECYCLER_LAYOUT = "IMDBOnlineFragment.moviesRecyclerView";
     private static final int MOVIES_LOADER_ID = 1;
-    public static MoviesAdapter mAdapter;
+
     public static Context context;
+    private final ArrayList<SingleMovie> movieGrid = new ArrayList<>();
     SharedPreferences sharedPrefs;
     private Parcelable state;
     private View view;
     private RecyclerView moviesRecyclerView;
-    private ArrayList<SingleMovie> movieGrid = new ArrayList<>();
+    /**
+     * Adapter for the list of movies
+     */
+    private MoviesAdapter.OnItemClickListener mListener;
+    private MoviesAdapter mAdapter = new MoviesAdapter(movieGrid, mListener);
     private TextView mEmptyStateTextView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Loader loader;
+
 
     public IMDBOnlineFragment() {
         // Required empty public constructor
@@ -61,6 +75,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_movies, container, false);
         context = getActivity();
+
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         loadingScheme();
@@ -72,8 +87,31 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         } else {
             moviesRecyclerView.setLayoutManager(new GridLayoutManager(context, 4));
         }
+        mListener = new MoviesAdapter.OnItemClickListener() {
 
-        mAdapter = new MoviesAdapter(movieGrid);
+            @Override
+            public void onItemClick(SingleMovie item) {
+
+                String currentMovieTitleString = item.getTitle();
+                String currentMovieOverviewString = item.getOverview();
+                String currentMovieReleaseDateString = item.getmReleaseDate();
+                String currentMovieVotingString = item.getVoting();
+                String currentMoviePosterString = item.getPoster();
+                String currentMovieID = item.getMovieID();
+
+                Intent intent1 = new Intent(getContext(), DetailActivity.class);
+
+                intent1.putExtra(EXTRA_TITLE, currentMovieTitleString);
+                intent1.putExtra(EXTRA_OVERVIEW, currentMovieOverviewString);
+                intent1.putExtra(EXTRA_RELEASE_DATE, currentMovieReleaseDateString);
+                intent1.putExtra(EXTRA_VOTE, currentMovieVotingString);
+                intent1.putExtra(EXTRA_POSTER, currentMoviePosterString);
+                intent1.putExtra(EXTRA_ID, currentMovieID);
+
+                startActivity(intent1);
+            }
+        };
+        mAdapter = new MoviesAdapter(movieGrid, mListener);
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
@@ -82,30 +120,10 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         moviesRecyclerView.addItemDecoration(new android.support.v7.widget.DividerItemDecoration(getActivity(), DividerItemDecoration.HORIZONTAL_LIST));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-//DefaultItemAnimator        mSwipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                // Refresh items
-//                refreshItems();
-//            }
-//        });
         return view;
     }
 
-//    void refreshItems() {
-//        // Load items
-//        loadingScheme();
-//        // Load complete
-//        onItemsLoadComplete();
-//    }
-//
-//    void onItemsLoadComplete() {
-//        // Update the adapter and notify data set changed
-//        Toast.makeText(getActivity(), getString(R.string.item_list_refreshed), Toast.LENGTH_SHORT).show();
-//        // Stop refresh animation
-//        mSwipeRefreshLayout.setRefreshing(false);
-//    }
+
 
     void loadingScheme() {
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
@@ -142,7 +160,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         if (state != null) {
             moviesRecyclerView.getLayoutManager().onRestoreInstanceState(state);
         }
-
     }
 
     @Override
@@ -156,17 +173,16 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     public Loader<ArrayList<SingleMovie>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader");
 
-        String orderr = sharedPrefs.getString(
+        String urlOrder = sharedPrefs.getString(
                 getString(R.string.imdb_settings_order_by_key),
                 getString(R.string.imdb_settings_order_by_label)
         );
 
-        Uri baseUri = Uri.parse(QUERY_BASE_URL);
+        Uri baseUri = Uri.parse(urlOrder);
 
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter(API_KEY, api_key);
-        uriBuilder.appendQueryParameter(SORT_BY, orderr);
         Log.i(LOG_TAG, uriBuilder.toString());
 
         return new MoviesLoader(context, uriBuilder.toString());
@@ -181,12 +197,12 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         loadingIndicator.setVisibility(View.GONE);
 
         moviesRecyclerView.setVisibility(View.VISIBLE);
-        mAdapter = new MoviesAdapter(movieGrid);
+        mAdapter = new MoviesAdapter(movieGrid, mListener);
 
         // If there is a valid list of {@link Movies}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
         if (movies != null && !movies.isEmpty()) {
-            mAdapter = new MoviesAdapter(movies);
+            mAdapter = new MoviesAdapter(movies, mListener);
             moviesRecyclerView.setAdapter(mAdapter);
         }
     }
@@ -195,7 +211,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     public void onLoaderReset(Loader<ArrayList<SingleMovie>> loader) {
         // Loader reset, so we can clear out our existing data.
         Log.i(LOG_TAG, "onLoaderReset");
-        mAdapter = new MoviesAdapter(movieGrid);
+        mAdapter = new MoviesAdapter(movieGrid, mListener);
     }
 
     @Override

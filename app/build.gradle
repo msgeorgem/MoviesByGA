@@ -9,6 +9,10 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+        // Please ensure you have a valid API KEY for themoviedb.org↵
+        //to use this app
+        // A valid key will need to be entered
+        buildConfigField("String", "API_KEY", API_KEY)
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
