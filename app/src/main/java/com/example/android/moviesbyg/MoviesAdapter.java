@@ -19,13 +19,7 @@ import java.util.ArrayList;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
 
-
-
-
-    private static final int IMG_LOADER = 22;
-    private static final String IMG_URL_EXTRA = "img";
     private final OnItemClickListener listener;
-    private MoviesActivity activity = new MoviesActivity();
     private ArrayList<SingleMovie> mListAdapter;
 
 
@@ -68,9 +62,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         private String imageURL;
         private ImageView imageView;
         private ImageView mFavGage;
-//        private TextView shortTextView;
-//        private TextView dateView;
-//        private TextView typeTextView;
 
 
         private MoviesViewHolder(View view) {

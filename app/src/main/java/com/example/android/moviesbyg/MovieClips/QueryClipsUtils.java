@@ -29,18 +29,13 @@ public class QueryClipsUtils {
      */
     public static final String LOG_TAG = QueryClipsUtils.class.getSimpleName();
 
-    private static final String API_KEY = "api_key";
-
 
     private static final String ERROR_MESSAGEC = "Problem parsing the clip JSON results";
     private static final String MDB_RESULTSC = "results";
     private static final String MDB_NAMEC = "name";
     private static final String MDB_TYPEC = "type";
-    private static final String MDB_IDC = "id";
     private static final String MDB_KEYC = "key";
     private static final String YT_BASE = "https://www.youtube.com/watch?v=";
-
-    private static final String MDB_BACKDROP_PATH = "backdrop_path";
 
     /**
      * Create a private constructor because no one should ever create a {@link QueryClipsUtils} object.
@@ -121,7 +116,7 @@ public class QueryClipsUtils {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the news JSON results.", e);
+            Log.e(LOG_TAG, ERROR_MESSAGEC, e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -186,7 +181,7 @@ public class QueryClipsUtils {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", ERROR_MESSAGEC, e);
         }
 
         // Return the list of news

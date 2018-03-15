@@ -50,7 +50,6 @@ import static com.example.android.moviesbyg.DataFavs.FavouritesContract.Favourit
 public class DetailActivity extends AppCompatActivity implements ClipsFragment.OnFragmentInteractionListenerC, ReviewsFragment.OnFragmentInteractionListenerR {
 
 
-    public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     public static final String LOG_TAG = DetailActivity.class.getSimpleName();
     public static final String[] PROJECTION = {
             FavouritesContract.FavouritesEntry._ID,
@@ -170,7 +169,6 @@ public class DetailActivity extends AppCompatActivity implements ClipsFragment.O
             mDetailBinding.part3.overview2.setText(currentOverview);
             context = mDetailBinding.part1.poster.getContext();
             Picasso.with(context).load(currentPoster).into(mDetailBinding.part1.poster);
-
 
             currentMovieId = Long.parseLong(movieId);
 

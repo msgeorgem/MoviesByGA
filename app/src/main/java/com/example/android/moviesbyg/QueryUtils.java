@@ -31,26 +31,21 @@ public class QueryUtils {
     public static final String LOG_TAG1 = "JSON";
     public static final String MDB_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
     public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
-    public static final String TEST_MDB_MOVIE_PATH = "https://api.themoviedb.org/3/movie/321612/videos?api_key=1157007d8e3f7d5e0af6d7e4165e2730";
     /**
      * Tag for the log messages
      */
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+    private static final String api_key = BuildConfig.API_KEY;
     public static final String MDB_MOVIE_PATH2 = "/videos?api_key=" + api_key;
     public static final String MDB_REVIEWS_PATH2 = "/reviews?api_key=" + api_key;
-    private static final String API_KEY = "api_key";
-
 
     private static final String ERROR_MESSAGE = "Problem parsing the movie JSON results";
     private static final String MDB_RESULTS = "results";
     private static final String MDB_TITLE = "title";
     private static final String MDB_DATE = "release_date";
-    private static final String MDB_POPULARITY = "popularity";
     private static final String MDB_VOTE = "vote_average";
     private static final String MDB_OVERVIEW = "overview";
     private static final String MDB_POSTER = "poster_path";
     private static final String MDB_ID = "id";
-    private static final String MDB_BACKDROP_PATH = "backdrop_path";
     static File cacheFile;
     /**
      * Create a private constructor because no one should ever create a {@link QueryUtils} object.
@@ -134,7 +129,7 @@ public class QueryUtils {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the news JSON results.", e);
+            Log.e(LOG_TAG, ERROR_MESSAGE, e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -209,7 +204,7 @@ public class QueryUtils {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", ERROR_MESSAGE, e);
         }
 
         // Return the list of news

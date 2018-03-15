@@ -39,9 +39,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     public static final String EXTRA_POSTER = "EXTRA_POSTER";
 
     public static final String LOG_TAG = IMDBOnlineFragment.class.getName();
-    private static final String URL =
-            "https://api.themoviedb.org/3/discover/movie?";
-    private static final String QUERY_BASE_URL = URL;
     /* API_KEY gained from themoviedb.org */
     private static final String api_key = BuildConfig.API_KEY;
     private static final String API_KEY = "api_key";
@@ -75,7 +72,10 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_movies, container, false);
         context = getActivity();
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        PreferenceManager.setDefaultValues(context, getString(R.string.imdb_settings_order_by_key), Context.MODE_PRIVATE,
+                R.xml.settings_main, false);
+
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         loadingScheme();

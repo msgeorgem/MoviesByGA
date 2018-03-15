@@ -45,7 +45,6 @@ public class FavouritesCursorAdapter extends CursorRecyclerAdapter<FavouritesCur
     public void onBindViewHolder(final ViewHolder viewHolder, Cursor cursor) {
 
         final long id;
-        final int mQuantity;
 
         // Find the columns of item attributes that we're interested in
         id = cursor.getLong(cursor.getColumnIndex(FavouritesContract.FavouritesEntry._ID));
