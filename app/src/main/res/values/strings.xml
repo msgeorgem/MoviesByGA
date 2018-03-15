@@ -51,6 +51,12 @@
     <string name="delete_oneitem_dialog_msg">Are you sure to remove this movie from favourites?</string>
     <string name="delete_one_item">Movie removed from favourites</string>
     <string name="item_list_refreshed">Movies refreshed</string>
+    <string name="name" translatable="true">Name</string>
+    <string name="type" translatable="true">Type</string>
+    <string name="overview" translatable="true">Overview</string>
+    <string name="rating" translatable="true">Rating</string>
+    <string name="title" translatable="true">Title</string>
+    <string name="release_date" translatable="true">Relaese Date</string>
 
 
 </resources>

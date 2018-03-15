@@ -28,7 +28,7 @@
             android:layout_gravity="start"
             android:layout_weight="0.5"
             android:gravity="bottom"
-            android:text="name"
+            android:text="@string/name"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_weight="0.5"
-            android:text="type"
+            android:text="@string/type"
             android:textSize="16sp" />
 
     </LinearLayout>
