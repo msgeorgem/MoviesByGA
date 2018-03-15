@@ -29,7 +29,6 @@ public class QueryClipsUtils {
      */
     public static final String LOG_TAG = QueryClipsUtils.class.getSimpleName();
 
-
     private static final String ERROR_MESSAGEC = "Problem parsing the clip JSON results";
     private static final String MDB_RESULTSC = "results";
     private static final String MDB_NAMEC = "name";
@@ -44,7 +43,6 @@ public class QueryClipsUtils {
      */
     private QueryClipsUtils() {
     }
-
 
     /**
      * Query the USGS dataset and return an {@link ArrayList <SingleMovieClip>} object to represent a single news.
