@@ -178,12 +178,8 @@ public class QueryClipsUtils {
 
                 String clipId = movie.getString(MDB_KEYC);
                 String ytclipId = YT_BASE + clipId;
-//                    String reviewIdPath = MDB_MOVIE_PATH1+movieId+MDB_REVIEWS_PATH2;
-//
-//
-//                    String clipPath = MDB_POSTER_PATH+moviePoster;
 
-                singleMovieClip.add(new SingleMovieClip(ytclipId, clipName, clipType));
+                singleMovieClip.add(new SingleMovieClip(ytclipId, clipId, clipName, clipType));
             }
 
         } catch (JSONException e) {

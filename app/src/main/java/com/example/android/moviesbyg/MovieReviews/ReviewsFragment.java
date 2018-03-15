@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.moviesbyg.BuildConfig;
 import com.example.android.moviesbyg.DividerItemDecoration;
 import com.example.android.moviesbyg.MoviesActivity;
 import com.example.android.moviesbyg.R;
@@ -38,7 +39,7 @@ public class ReviewsFragment extends Fragment implements LoaderManager.LoaderCal
 
     public static final String MDB_MOVIE_PATH1 = "https://api.themoviedb.org/3/movie/";
     public static final String LOG_TAG = ReviewsFragment.class.getSimpleName();
-    private static final String api_key = "1157007d8e3f7d5e0af6d7e4165e2730";
+    private static final String api_key = BuildConfig.API_KEY;
     public static final String MDB_REVIEWS_PATH2 = "/reviews?api_key=" + api_key;
     private static final int REVIEWS_LOADER_ID = 333;
     public static String QUERY_BASE_URL_R;

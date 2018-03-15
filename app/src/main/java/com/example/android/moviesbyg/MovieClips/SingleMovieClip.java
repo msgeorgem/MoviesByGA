@@ -6,18 +6,20 @@ package com.example.android.moviesbyg.MovieClips;
 
 public class SingleMovieClip {
 
-    private String mClip;
+    private String mClipUrl;
+    private String mClipId;
     private String mClipName;
     private String mClipType;
 
-    public SingleMovieClip(String clipUrl, String clipName, String clipType) {
-        mClip = clipUrl;
+    public SingleMovieClip(String clipUrl, String clipId, String clipName, String clipType) {
+        mClipUrl = clipUrl;
         mClipName = clipName;
         mClipType = clipType;
+        mClipId = clipId;
     }
 
     public String getClipUrl() {
-        return mClip;
+        return mClipUrl;
     }
 
     public String getClipName() {
@@ -26,6 +28,10 @@ public class SingleMovieClip {
 
     public String getClipType() {
         return mClipType;
+    }
+
+    public String getClipId() {
+        return mClipId;
     }
 
 }

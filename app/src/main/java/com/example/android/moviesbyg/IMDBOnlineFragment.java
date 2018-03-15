@@ -75,7 +75,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_movies, container, false);
         context = getActivity();
-
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
         loadingScheme();
@@ -124,11 +124,10 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     }
 
 
-
     void loadingScheme() {
         NetworkInfo networkInfo = MoviesActivity.cm.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
             // Get a reference to the LoaderManager, in order to interact with loaders.
             LoaderManager loaderManager = getLoaderManager();
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
@@ -172,6 +171,7 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<ArrayList<SingleMovie>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader");
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String urlOrder = sharedPrefs.getString(
                 getString(R.string.imdb_settings_order_by_key),

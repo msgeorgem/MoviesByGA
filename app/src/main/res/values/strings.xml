@@ -9,9 +9,9 @@
     <string name="imdb_settings_order_by_vote_value">https://api.themoviedb.org/3/movie/top_rated</string>
 
     <!-- Default order for order preference -->
-    <string name="imdb_settings_order_by_default" translatable="false">popular?</string>
-    <string name="imdb_settings_order_by_key">order</string>
+    <string name="imdb_settings_order_by_default" translatable="false">https://api.themoviedb.org/3/movie/popular</string>
     <string name="imdb_settings_order_by_label">IMDB Order By</string>
+    <string name="imdb_settings_order_by_key">order</string>
 
     <string name="fav_settings_order_by_vote_label" translatable="true">Vote</string>
     <string name="fav_settings_order_by_release_label" translatable="true">Release date</string>

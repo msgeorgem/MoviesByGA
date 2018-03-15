@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.android.moviesbyg.DetailActivity;
 import com.example.android.moviesbyg.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,6 @@ public class MovieClipsAdapter extends RecyclerView.Adapter<MovieClipsAdapter.Cl
     public MovieClipsAdapter(ArrayList<SingleMovieClip> listClips) {
         this.context = context;
         mListAdapterC = listClips;
-
     }
 
     @Override
@@ -51,6 +51,16 @@ public class MovieClipsAdapter extends RecyclerView.Adapter<MovieClipsAdapter.Cl
         // Get the {@link movieClip} object located at this position in the list
         final SingleMovieClip movieClip = mListAdapterC.get(position);
 
+//        http://img.youtube.com/vi/VIDEO_ID/default.jpg
+
+        Context context = viewHolder.imageView.getContext();
+        String clipId = movieClip.getClipId();
+        String baseUri = "http://img.youtube.com/vi/";
+        String extention = "/default.jpg";
+
+        String address = baseUri + clipId + extention;
+        Picasso.with(context).load(address).fit().into(viewHolder.imageView);
+
         viewHolder.nameTextView.setText(movieClip.getClipName());
         viewHolder.typeTextView.setText(movieClip.getClipType());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +73,7 @@ public class MovieClipsAdapter extends RecyclerView.Adapter<MovieClipsAdapter.Cl
                 context.startActivity(browserIntent);
             }
         });
+
     }
 
 

@@ -11,7 +11,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_reviews"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
