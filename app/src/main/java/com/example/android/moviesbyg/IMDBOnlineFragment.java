@@ -43,7 +43,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
     private static final String api_key = BuildConfig.API_KEY;
     private static final String API_KEY = "api_key";
 
-    private static final String SORT_BY = "sort_by";
     private static final String BUNDLE_RECYCLER_LAYOUT = "IMDBOnlineFragment.moviesRecyclerView";
     private static final int MOVIES_LOADER_ID = 1;
 
@@ -73,8 +72,8 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         view = inflater.inflate(R.layout.fragment_movies, container, false);
         context = getActivity();
 
-        PreferenceManager.setDefaultValues(context, getString(R.string.imdb_settings_order_by_key), Context.MODE_PRIVATE,
-                R.xml.settings_main, false);
+//        PreferenceManager.setDefaultValues(context, getString(R.string.imdb_settings_order_by_key), Context.MODE_PRIVATE,
+//                R.xml.settings_main, false);
 
         Log.i(LOG_TAG, "initLoader");
         // Get details on the currently active default data network
@@ -173,12 +172,12 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
         Log.i(LOG_TAG, "onCreateLoader");
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String urlOrder = sharedPrefs.getString(
+        String orderr = sharedPrefs.getString(
                 getString(R.string.imdb_settings_order_by_key),
-                getString(R.string.imdb_settings_order_by_label)
+                getString(R.string.imdb_settings_order_by_default)
         );
 
-        Uri baseUri = Uri.parse(urlOrder);
+        Uri baseUri = Uri.parse(orderr);
 
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
@@ -187,7 +186,6 @@ public class IMDBOnlineFragment extends Fragment implements LoaderManager.Loader
 
         return new MoviesLoader(context, uriBuilder.toString());
     }
-
 
     @Override
     public void onLoadFinished(Loader<ArrayList<SingleMovie>> loader, ArrayList<SingleMovie> movies) {
