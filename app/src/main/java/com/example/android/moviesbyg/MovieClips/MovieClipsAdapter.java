@@ -56,7 +56,7 @@ public class MovieClipsAdapter extends RecyclerView.Adapter<MovieClipsAdapter.Cl
         Context context = viewHolder.imageView.getContext();
         String clipId = movieClip.getClipId();
         String baseUri = "http://img.youtube.com/vi/";
-        String extension = "/default.jpg";
+        String extension = "/mqdefault.jpg";
 
         String address = baseUri + clipId + extension;
         Picasso.with(context).load(address).fit().into(viewHolder.imageView);
