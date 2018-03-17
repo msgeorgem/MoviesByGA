@@ -56,7 +56,7 @@
     <string name="overview" translatable="true">Overview</string>
     <string name="rating" translatable="true">Rating</string>
     <string name="title" translatable="true">Title</string>
-    <string name="release_date" translatable="true">Relaese Date</string>
+    <string name="release_date" translatable="true">Release Date</string>
 
 
 </resources>
