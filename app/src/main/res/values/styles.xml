@@ -23,7 +23,7 @@
     </style>
 
     <style name="CategoryTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">#FF4081</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
 </resources>
